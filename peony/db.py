@@ -4,10 +4,12 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.sql import select, func
-from geoalchemy2 import Geometry
+from geoalchemy2 import Geometry, functions
+from geoalchemy2.shape import to_shape
 from peony.utils import geojson_to_wktelement
 import datetime
 import pathlib
+from os.path import exists
 
 Base = declarative_base()
 
@@ -56,6 +58,8 @@ def csv_2_spatialite(csv_path, sqlite_path):
             date = datetime.datetime.strptime(date_str, '%Y-%m-%dT%H:%M:%S')
             polygon = line[1].strip('"').strip().split(' ')
             assert(len(polygon) % 2 == 0)
+            assert(polygon[0] == polygon[-2])
+            assert(polygon[1] == polygon[-1])
             polygon = ', '.join([polygon[i] + ' ' + polygon[i + 1] for i in range(len(polygon) // 2)])
             polygon = f"POLYGON(({polygon}))"
             name = line[2].strip('"').strip()
@@ -81,12 +85,13 @@ def query_polygon(sqlite_path, geojson_path):
     list
         A list with pairs consisting of path and product name.
     """
-    engine = create_engine('sqlite:///{sqlite_path}')
+    assert(exists(sqlite_path))
+    assert(exists(geojson_path))
+    engine = create_engine(f"sqlite:///{sqlite_path}")
     listen(engine, 'connect', load_spatialite)
-    init_spatial_metadata(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
     polygon = geojson_to_wktelement(geojson_path)
-    query = session.query(Image).filter(Image.geom.ST_Overlaps(
-        polygon))
+    query = session.query(Image).filter(
+        Image.geom.ST_Overlaps(polygon))
     return [(image.path, image.name) for image in query]
