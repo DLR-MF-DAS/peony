@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, Integer, String, Date
 from sqlalchemy.sql import select, func
 from geoalchemy2 import Geometry
+from peony.utils import geojson_to_wktelement
 import datetime
 import pathlib
 
@@ -65,15 +66,15 @@ def csv_2_spatialite(csv_path, sqlite_path):
                 session.commit()
     session.commit()
 
-def query_polygon(sqlite_path, polygon):
+def query_polygon(sqlite_path, geojson_path):
     """Will try to find records whos geometry overlaps with the given polygon.
 
     Parameters
     ----------
     sqlite_path: str
         A path to the sqlite database that contains satellite image metadata.
-    polygon: WKTElement
-        A WKTElement object representing the polygon of interest.
+    geojson_path: str
+        A path to a GeoJSON file that contains the polygon to query by.
 
     Returns
     -------
@@ -85,6 +86,7 @@ def query_polygon(sqlite_path, polygon):
     init_spatial_metadata(engine)
     Session = sessionmaker(bind=engine)
     session = Session()
+    polygon = geojson_to_wktelement(geojson_path)
     query = session.query(Image).filter(Image.geom.ST_Overlaps(
         polygon))
     return [(image.path, image.name) for image in query]
