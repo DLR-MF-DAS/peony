@@ -20,6 +20,15 @@ class Image(Base):
     geom = Column(Geometry('POLYGON', management=True))
     date = Column(Date)
 
+def load_spatialite(dbapi_conn, connection_record):
+    dbapi_conn.enable_load_extension(True)
+    dbapi_conn.load_extension('mod_spatialite')
+
+def init_spatial_metadata(engine):
+    conn = engine.connect()
+    conn.execute(select([func.InitSpatialMetaData()]))
+    conn.close()
+
 def csv_2_spatialite(csv_path, sqlite_path):
     """Populates a spatialite database based on a CSV file.
 
@@ -56,11 +65,26 @@ def csv_2_spatialite(csv_path, sqlite_path):
                 session.commit()
     session.commit()
 
-def load_spatialite(dbapi_conn, connection_record):
-    dbapi_conn.enable_load_extension(True)
-    dbapi_conn.load_extension('mod_spatialite')
+def query_polygon(sqlite_path, polygon):
+    """Will try to find records whos geometry overlaps with the given polygon.
 
-def init_spatial_metadata(engine):
-    conn = engine.connect()
-    conn.execute(select([func.InitSpatialMetaData()]))
-    conn.close()
+    Parameters
+    ----------
+    sqlite_path: str
+        A path to the sqlite database that contains satellite image metadata.
+    polygon: WKTElement
+        A WKTElement object representing the polygon of interest.
+
+    Returns
+    -------
+    list
+        A list with pairs consisting of path and product name.
+    """
+    engine = create_engine('sqlite:///{sqlite_path}')
+    listen(engine, 'connect', load_spatialite)
+    init_spatial_metadata(engine)
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    query = session.query(Image).filter(Image.geom.ST_Overlaps(
+        polygon))
+    return [(image.path, image.name) for image in query]
