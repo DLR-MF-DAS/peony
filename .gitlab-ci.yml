@@ -27,7 +27,7 @@ build-job:       # This job runs in the build stage, which runs first.
 unit-test-job:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
   script:
-    - apt-get install pip3
+    - apt-get install python3-pip
     - pip3 install geoalchemy2 spatialite
     - python3 setup.py develop
     - pytest tests/
