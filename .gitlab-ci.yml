@@ -28,7 +28,7 @@ unit-test-job:   # This job runs in the test stage.
   stage: test    # It only starts when the job in the build stage completes successfully.
   script:
     - apt-get update
-    - apt-get install python3-pip
+    - DEBIAN_FRONTEND=noninteractive apt-get install --fix-missing --yes install python3-pip
     - pip3 install geoalchemy2 spatialite
     - python3 setup.py develop
     - pytest tests/
