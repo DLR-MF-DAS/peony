@@ -92,6 +92,6 @@ def query_polygon(sqlite_path, geojson_path):
     Session = sessionmaker(bind=engine)
     session = Session()
     polygon = geojson_to_wktelement(geojson_path)
-    query = session.query(Image).filter(
+    query = session.query(Image).filter(Image.geom != None).filter(
         Image.geom.ST_Overlaps(polygon))
     return [(image.path, image.name) for image in query]
