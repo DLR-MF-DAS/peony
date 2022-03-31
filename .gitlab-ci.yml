@@ -29,7 +29,7 @@ unit-test-job:   # This job runs in the test stage.
   script:
     - apt-get update
     - DEBIAN_FRONTEND=noninteractive apt-get --fix-missing --yes install python3-pip
-    - pip3 install geoalchemy2 spatialite setuptools pytest
+    - pip3 install geoalchemy2 spatialite setuptools pytest shapely
     - python3 setup.py develop
     - pytest test/
 
