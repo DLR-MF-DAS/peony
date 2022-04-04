@@ -8,5 +8,5 @@ RUN pip3 install breathe numpy pandas scikit-learn rasterio matplotlib scikit-im
 RUN wget https://step.esa.int/downloads/8.0/installers/esa-snap_sentinel_unix_8_0.sh && yes "" | sh esa-snap_sentinel_unix_8_0.sh
 
 COPY peony/ /peony
-RUN cd peony && python setup.py install
+RUN cd peony && python3 setup.py install
 
