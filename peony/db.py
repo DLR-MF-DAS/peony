@@ -19,7 +19,7 @@ class Image(Base):
     __tablename__ = 'image'
     id = Column(Integer, primary_key=True)
     path = Column(String)
-    name = Column(String)
+    name = Column(String, unique=True)
     geom = Column(Geometry('POLYGON', management=True))
     date = Column(Date)
 
