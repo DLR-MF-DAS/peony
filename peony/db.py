@@ -63,7 +63,11 @@ def csv_2_spatialite(csv_path, sqlite_path):
             polygon = ', '.join([polygon[i] + ' ' + polygon[i + 1] for i in range(len(polygon) // 2)])
             polygon = f"POLYGON(({polygon}))"
             name = line[2].strip('"').strip()
-            path = pathlib.PurePath(line[3].strip('"').strip()).parent
+            path_str = line[3].strip('"').strip()
+            if pathlib.PurePath(path_str).suffix != '.json':
+                path = pathlib.PurePath(path_str).parents[0]
+            else:
+                path = pathlib.PurePath(path_str).parents[1]
             session.add(Image(path=str(path), geom=polygon, name=name, date=date))
             counter += 1
             if (counter % 1000) == 0:
