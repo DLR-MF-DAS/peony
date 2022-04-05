@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+
+from peony.db import query_polygon
+import click
+
+@click.command()
+@click.option("-p", "--polygon", help="GeoJSON file with a polygon of interest", required=True)
+@click.option("-d", "--database", help="SQLite file with the metadata database", required=True)
+def main(polygon, database):
+    result = query_polygon(polygon, database)
+    print(result)
+
+if __name__ == '__main__':
+    main()
+
+
