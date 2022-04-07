@@ -1,3 +1,20 @@
+#!/bin/bash
+# Job Name and Files (also --job-name)
+#SBATCH -J preprocess
+#Output and error (also --output, --error):
+#SBATCH -o /hppfs/scratch/0E/di73kuj5/%x.%j.out
+#SBATCH -e /hppfs/scratch/0E/di73kuj5/%x.%j.err
+#Initial working directory (also --chdir):
+#SBATCH -D ./
+# Wall clock limit:`
+#SBATCH --time=02:00:00
+#SBATCH --no-requeue
+#Setup of execution environment
+#SBATCH --export=NONE
+#SBATCH --get-user-env
+#SBATCH --account=pr53ya
+#SBATCH --partition=micro
+
 {% for filename in filenames %}
-analyze {{ filename }}
-{% endfor %}
+/dss/dsshome1/0E/di73kuj5/snap/bin/gpt bandselect_upsampling.xml -Pinput={{ filename }} -Poutput={{ filename }}_upsampled.tif
+{% endfor -%}
