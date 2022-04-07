@@ -7,7 +7,7 @@
 #Initial working directory (also --chdir):
 #SBATCH -D ./
 # Wall clock limit:`
-#SBATCH --time=02:00:00
+#SBATCH --time=08:00:00
 #SBATCH --no-requeue
 #Setup of execution environment
 #SBATCH --export=NONE
@@ -15,6 +15,8 @@
 #SBATCH --account=pr53ya
 #SBATCH --partition=micro
 
+mkdir $SCRATCH/peony
+
 {% for filename in filenames %}
-/dss/dsshome1/0E/di73kuj5/snap/bin/gpt bandselect_upsampling.xml -Pinput={{ filename }} -Poutput={{ filename }}_upsampled.tif
-{% endfor -%}
+$HOME/snap/bin/gpt bandselect_upsampling.xml -Pinput={{ filename[0] }} -Poutput=$SCRATCH/peony/{{ filename[1] }}_upsampled.tif
+{% endfor %}

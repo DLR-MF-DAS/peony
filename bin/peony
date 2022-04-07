@@ -19,7 +19,7 @@ def main(polygon, database, template, output):
         with open(template, 'r') as fd:
             j2_template = Template(fd.read())
         with open(output, 'w') as fd:
-            fd.write(j2_template.render({'filenames' : [p[0] for p in result]}))
+            fd.write(j2_template.render({'filenames' : result}))
 
 if __name__ == '__main__':
     main()
