@@ -66,9 +66,10 @@ def csv_2_spatialite(csv_path, sqlite_path):
             name = line[2].strip('"').strip()
             path_str = line[3].strip('"').strip()
             if pathlib.PurePath(path_str).suffix != '.json':
-                path = pathlib.PurePath(path_str).parents[0]
+                path = pathlib.PurePath(pathlib.PurePath(path_str).parents[0], name)
             else:
-                path = pathlib.PurePath(path_str).parents[1]
+                path = pathlib.PurePath(pathlib.PurePath(path_str).parents[1], name + ".SAFE.zip")
+                name = name.split('.')[0]
             session.add(Image(path=str(path), geom=polygon, name=name, date=date))
             counter += 1
             if (counter % 1000) == 0:

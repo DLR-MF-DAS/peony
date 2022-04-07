@@ -1,0 +1,3 @@
+{% for filename in filenames %}
+analyze {{ filename }}
+{% endfor %}
