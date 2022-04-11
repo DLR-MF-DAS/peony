@@ -65,18 +65,13 @@ def csv_2_spatialite(csv_path, sqlite_path):
             polygon = f"POLYGON(({polygon}))"
             name = line[2].strip('"').strip()
             path_str = line[3].strip('"').strip()
-            if pathlib.PurePath(path_str).suffix != '.json':
-                path = pathlib.PurePath(pathlib.PurePath(path_str).parents[0], name)
-            else:
-                path = pathlib.PurePath(pathlib.PurePath(path_str).parents[1], name + ".SAFE.zip")
-                name = name.split('.')[0]
             session.add(Image(path=str(path), geom=polygon, name=name, date=date))
             counter += 1
             if (counter % 1000) == 0:
                 session.commit()
     session.commit()
 
-def query_polygon(sqlite_path, geojson_path):
+def query_polygon(sqlite_path, geojson_path, date_range=None):
     """Will try to find records whos geometry overlaps with the given polygon.
 
     Parameters
@@ -100,4 +95,8 @@ def query_polygon(sqlite_path, geojson_path):
     polygon = geojson_to_wktelement(geojson_path)
     query = session.query(Image).filter(Image.geom != None).filter(
         Image.geom.ST_Overlaps(polygon))
+    if date_range is not None:
+        query = query.\
+            filter(Image.date >= date_range[0]).\
+            filter(Image.date < date_range[1])
     return [(image.path, image.name) for image in query]
