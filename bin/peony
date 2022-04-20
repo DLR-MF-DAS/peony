@@ -14,7 +14,7 @@ from jinja2 import Template
 def main(polygon, database, template, output, date_range):
     if date_range is not None:
         import datetime
-        date_pair = date.strip().split('-')
+        date_pair = date_range.strip().split('-')
         date_pair = (datetime.datetime.strptime(date_pair[0], '%d.%m.%Y'),
                      datetime.datetime.strptime(date_pair[1], '%d.%m.%Y'))
     else:
