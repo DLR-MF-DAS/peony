@@ -10,8 +10,16 @@ from jinja2 import Template
 @click.option("-d", "--database", help="SQLite file with the metadata database", required=True)
 @click.option("-i", "--template", help="Jinja2 template file to fill in with file names")
 @click.option("-o", "--output", help="Output file constructed from the user specified template")
+@click.option("--date", help="Date range for the query (dd.mm.yyyy-dd.mm.yyyy format)", default=None)
 def main(polygon, database, template, output):
-    result = query_polygon(database, polygon)
+    if date is not None:
+        import datetime
+        date_pair = date.strip().split('-')
+        date_pair = (datetime.datetime.strptime(date_pair[0], '%d.%m.%Y'),
+                     datetime.datetime.strptime(date_pair[1], '%d.%m.%Y'))
+    else:
+        date_pair = None
+    result = query_polygon(database, polygon, date_pair)
     if template is None:
         for tup in result:
             print(tup[0])
