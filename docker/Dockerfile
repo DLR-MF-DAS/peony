@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-RUN apt-get install software-properties-common && apt-get update && add-apt-repository ppa:ubuntugis/ppa && apt-get update
+RUN apt-get update && apt-get install software-properties-common && apt-get update && add-apt-repository ppa:ubuntugis/ppa && apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install --yes python3-pip libsqlite3-mod-spatialite default-jre wget git gdal-bin libgdal-dev
 RUN pip3 install breathe numpy pandas scikit-learn rasterio matplotlib scikit-image geoalchemy2 spatialite setuptools pytest shapely click jinja2 gdal
 RUN pip3 install tensorflow
