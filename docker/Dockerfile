@@ -9,5 +9,5 @@ RUN wget https://step.esa.int/downloads/8.0/installers/esa-snap_sentinel_unix_8_
 
 COPY peony/ /peony
 RUN cd peony && python3 setup.py install
-COPY s2_classification_pipeline
+COPY s2_classification_pipeline/ /s2_classification_pipeline
 RUN cd s2_classification_pipeline && python3 setup.py install
