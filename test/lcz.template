@@ -1,0 +1,32 @@
+#!/bin/bash
+# Job Name and Files (also --job-name)
+#SBATCH -J {{ name }}_lcz
+#Output and error (also --output, --error):
+#SBATCH -o {{ output }}/%x.%j.out
+#SBATCH -e {{ output }}/%x.%j.err
+#Initial working directory (also --chdir):
+#SBATCH -D ./
+# Wall clock limit:
+#SBATCH --time=08:00:00
+#SBATCH --no-requeue
+#Setup of execution environment
+#SBATCH --export=NONE
+#SBATCH --get-user-env
+#SBATCH --account=pr53ya
+#SBATCH --partition=micro
+
+OUTPUTDIR=$SCRATCH/lcz/
+mkdir -p $OUTPUT
+
+{% for image in images %}
+$HOME/snap/bin/gpt bandselect_upsampling.xml -Pinput={{ image["filename"] }} -Poutput=$OUTPUT/{{ image["name"] }}_upsampled.tif ;
+mkdir -p $OUTPUT/{{ image["name"] }} ;
+ch-run --unset-env=PROJ_LIB -b $OUTPUT:/mnt/0 ~/docker/peony -- sen2inference.py -i /mnt/0/{{ image["name"] }}_upsampled.tif -m /home/di73kuj5/S2.hdf5 -o  /mnt/0/{{ image["name"] }};
+ch-run -b $OUTPUT:/mnt/0 ~/docker/peony -- sen2cloudless.py -i /mnt/0/{{ image["name"] }}_upsampled.tif -o /mnt/0/{{ image["name"] }}_clouds.arr &
+{% endfor %}
+
+for pid in "$@"; do
+    while kill -0 "$pid"; do
+        sleep 1
+    done
+done

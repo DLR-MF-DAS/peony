@@ -4,14 +4,17 @@
 from peony.db import query_polygon
 import click
 from jinja2 import Template
+from pathlib import Path
+import numpy as np
 
 @click.command()
 @click.option("-p", "--polygon", help="GeoJSON file with a polygon of interest", required=True)
 @click.option("-d", "--database", help="SQLite file with the metadata database", required=True)
-@click.option("-i", "--template", help="Jinja2 template file to fill in with file names")
+@click.option("-i", "--template", help="Jinja2 template file to fill in with file names, will pass a list of tuples to the template of the form (filename, name, date)")
 @click.option("-o", "--output", help="Output file constructed from the user specified template")
 @click.option("--date-range", help="Date range for the query (dd.mm.yyyy-dd.mm.yyyy format)", default=None)
-def main(polygon, database, template, output, date_range):
+@click.option("--batch-size", help="Number of jobs to run in parallel. If set to an integer then that number of image information will be passed to the templating engine. If not specified all images matching query will be passed", default=0)
+def main(polygon, database, template, output, date_range, batch_size):
     if date_range is not None:
         import datetime
         date_pair = date_range.strip().split('-')
@@ -20,14 +23,27 @@ def main(polygon, database, template, output, date_range):
     else:
         date_pair = None
     result = query_polygon(database, polygon, date_pair)
+    result = [
+        {
+            'filename' : tup[0],
+            'name' : tup[1],
+            'date' : tup[2],
+            'path' : str(Path(tup[0]).parent.absolute())
+        } for tup in result]
     if template is None:
         for tup in result:
-            print(tup[0], tup[1], tup[2])
+            print(tup['filename'], tup['name'], tup['date'], tup['path'])
     else:
         with open(template, 'r') as fd:
             j2_template = Template(fd.read())
-        with open(output, 'w') as fd:
-            fd.write(j2_template.render({'filenames' : result}))
+        if batch_size == 0:
+            with open(output, 'w') as fd:
+                fd.write(j2_template.render({'images' : result}))
+        else:
+            for batch in np.array_split(result, batch_size):
+                batch = list(batch)
+                with open(Path(output, f"{batch[0]['name']}-{batch[-1]['name']}"), 'w') as fd:
+                    fd.write(j2_template.render({'images' : batch}))
 
 if __name__ == '__main__':
     main()
