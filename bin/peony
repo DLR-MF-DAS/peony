@@ -36,18 +36,18 @@ def main(polygon, database, template, output, date_range, batch_size):
     else:
         with open(template, 'r') as fd:
             j2_template = Template(fd.read())
+        # If batch size is not specified will use all of the images matching the query
         if batch_size == 0:
-            with open(output, 'w') as fd:
-                fd.write(j2_template.render({'images' : result}))
-        else:
-            for batch in np.array_split(result, batch_size):
-                batch = list(batch)
-                script = j2_template.render({'images' : batch})
-                if output is None:
-                    print(script)
-                else:
-                    with open(Path(output, f"{batch[0]['name']}-{batch[-1]['name']}"), 'w') as fd:
-                        fd.write(script)
+            batch_size = len(result)
+        for batch in np.array_split(result, batch_size):
+            batch = list(batch)
+            script = j2_template.render({'images' : batch})
+            # If output file is not specified will default to printing to stdout
+            if output is None:
+                print(script)
+            else:
+                with open(Path(output, f"{batch[0]['name']}-{batch[-1]['name']}"), 'w') as fd:
+                    fd.write(script)
 
 if __name__ == '__main__':
     main()
