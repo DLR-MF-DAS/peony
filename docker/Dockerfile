@@ -6,6 +6,7 @@ RUN pip3 install breathe numpy pandas scikit-learn rasterio matplotlib scikit-im
 RUN pip3 install tensorflow
 
 RUN wget https://step.esa.int/downloads/8.0/installers/esa-snap_sentinel_unix_8_0.sh && yes "" | sh esa-snap_sentinel_unix_8_0.sh
+RUN wget https://step.esa.int/thirdparties/sen2cor/2.10.0/Sen2Cor-02.10.01-Linux64.run && sh Sen2Cor-02.10.01-Linux64.run
 
 COPY peony/ /peony
 RUN cd peony && python3 setup.py install
