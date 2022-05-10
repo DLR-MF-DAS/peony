@@ -11,7 +11,7 @@ import numpy as np
 @click.option("-p", "--polygon", help="GeoJSON file with a polygon of interest", required=True)
 @click.option("-d", "--database", help="SQLite file with the metadata database", required=True)
 @click.option("-i", "--template", help="Jinja2 template file to fill in with file names, will pass a list of tuples to the template of the form (filename, name, date)")
-@click.option("-o", "--output", help="Output file constructed from the user specified template")
+@click.option("-o", "--output", help="Output file constructed from the user specified template", default=None)
 @click.option("--date-range", help="Date range for the query (dd.mm.yyyy-dd.mm.yyyy format)", default=None)
 @click.option("--batch-size", help="Number of jobs to run in parallel. If set to an integer then that number of image information will be passed to the templating engine. If not specified all images matching query will be passed", default=0)
 def main(polygon, database, template, output, date_range, batch_size):
@@ -42,8 +42,12 @@ def main(polygon, database, template, output, date_range, batch_size):
         else:
             for batch in np.array_split(result, batch_size):
                 batch = list(batch)
-                with open(Path(output, f"{batch[0]['name']}-{batch[-1]['name']}"), 'w') as fd:
-                    fd.write(j2_template.render({'images' : batch}))
+                script = j2_template.render({'images' : batch})
+                if output is None:
+                    print(script)
+                else:
+                    with open(Path(output, f"{batch[0]['name']}-{batch[-1]['name']}"), 'w') as fd:
+                        fd.write(script)
 
 if __name__ == '__main__':
     main()
