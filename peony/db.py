@@ -81,10 +81,10 @@ def query_polygon(sqlite_path, geojson_path, date_range=None):
     geojson_path: str
         A path to a GeoJSON file that contains the polygon to query by.
 
-    Returns
-    -------
-    list
-        A list with pairs consisting of path and product name.
+    Yelds
+    -----
+    tuple
+        A tuple consisting of path, product name and date
     """
     assert(exists(sqlite_path))
     assert(exists(geojson_path))
@@ -97,4 +97,5 @@ def query_polygon(sqlite_path, geojson_path, date_range=None):
         Image.geom.ST_Overlaps(polygon))
     if date_range is not None:
         query = query.filter(Image.date.between(date_range[0], date_range[1]))
-    return [(image.path, image.name, image.date) for image in query]
+    for image in query:
+        yield image.path, image.name, image.date
