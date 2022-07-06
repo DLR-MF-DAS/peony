@@ -50,4 +50,9 @@ deploy-job:      # This job runs in the deploy stage.
     - apt-get update
     - DEBIAN_FRONTEND=noninteractive apt-get --fix-missing --yes install python3-pip libsqlite3-mod-spatialite charliecloud
     - cp docker/Dockerfile .
+    - ch-build -t peony .
+    - ch-convert -i docker -o tar peony peony.tar.gz
     - echo "Application successfully deployed."
+  artifacts:
+    paths:
+      - peony.tar.gz
