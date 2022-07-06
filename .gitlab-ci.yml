@@ -47,4 +47,7 @@ deploy-job:      # This job runs in the deploy stage.
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   script:
     - echo "Deploying application..."
+    - apt-get update
+    - DEBIAN_FRONTEND=noninteractive apt-get --fix-missing --yes install python3-pip libsqlite3-mod-spatialite charliecloud
+    - cp docker/Dockerfile .
     - echo "Application successfully deployed."
