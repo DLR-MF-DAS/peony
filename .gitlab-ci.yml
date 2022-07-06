@@ -55,7 +55,6 @@ deploy-job:      # This job runs in the deploy stage.
     - apt-get update
     - DEBIAN_FRONTEND=noninteractive apt-get --yes install docker-ce docker-ce-cli containerd.io docker-compose-plugin
     - cp docker/Dockerfile .
-    - groupadd docker
     - usermod -aG docker $USER
     - exec su -l $USER
     - ch-build -t peony .
