@@ -48,7 +48,7 @@ deploy-job:      # This job runs in the deploy stage.
   script:
     - echo "Deploying application..."
     - apt-get update
-    - DEBIAN_FRONTEND=noninteractive apt-get --yes install sudo charliecloud ca-certificates curl gnupg lsb-release build-essential
+    - DEBIAN_FRONTEND=noninteractive apt-get --yes install sudo wget ca-certificates curl gnupg lsb-release build-essential
     - wget https://github.com/hpc/charliecloud/releases/download/v0.28/charliecloud-0.28.tar.gz .
     - tar -xvzf charliecloud-0.28.tar.gz
     - cd charliecloud-0.28 && ./configure && make && make install && cd ..
