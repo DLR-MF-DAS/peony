@@ -44,6 +44,9 @@ lint-test-job:   # This job also runs in the test stage.
     - echo "No lint issues found."
 
 deploy-job:      # This job runs in the deploy stage.
+  variables:
+    DOCKERHUB_USER: $DOCKERHUB_USER
+    DOCKERHUB_PASS: $DOCKERHUB_PASS
   stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
   script:
     - echo "Deploying application..."
@@ -59,7 +62,8 @@ deploy-job:      # This job runs in the deploy stage.
     - DEBIAN_FRONTEND=noninteractive apt-get --yes install docker-ce docker-ce-cli containerd.io docker-compose-plugin
     - cp docker/Dockerfile .
     - docker build -t peony:latest -f Dockerfile .
-    - ch-convert -i docker -o tar peony peony.tar.gz
+    - docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
+    - docker push peony:latest
     - echo "Application successfully deployed."
   artifacts:
     paths:
