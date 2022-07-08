@@ -65,6 +65,3 @@ deploy-job:      # This job runs in the deploy stage.
     - docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
     - docker push peony:latest
     - echo "Application successfully deployed."
-  artifacts:
-    paths:
-      - peony.tar.gz
