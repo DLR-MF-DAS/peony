@@ -98,4 +98,4 @@ def query_polygon(sqlite_path, geojson_path, date_range=None):
     if date_range is not None:
         query = query.filter(Image.date.between(date_range[0], date_range[1]))
     for image in query:
-        yield image.path, image.name, image.date
+        yield image
