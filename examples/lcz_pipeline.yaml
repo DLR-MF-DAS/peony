@@ -1,0 +1,92 @@
+context_parser: pypyr.parser.keyvaluepairs
+steps:
+  - name: pypyr.steps.pathcheck
+    in:
+      pathCheck: '{path}/height_geocode/height_conversion_factor.txt'
+  - name: pypyr.steps.shell
+    skip: '{pathCheckOut[{path}/height_geocode/height_conversion_factor.txt][exists]}'
+    onError: 'height conversion factor failed in {path}'
+    in:
+      cmd:
+        run: grep height_conversion_factor *CoSSC*/ppool.dat | awk '{{print $3}}' > height_geocode/height_conversion_factor.txt
+        cwd: '{path}'
+        stdout: './height_conversion_factor.stdout.log'
+        stderr: './height_conversion_factor.stderr.log'
+
+
+  - name: hpccmd
+    onError: 'save point cloud failed in {path}'
+    in:
+      stepname: save_point_cloud
+      outputFile: '{path}/height_geocode/ps_num.flt'
+      cmd:
+        run: 'bin_save_pointCloud'
+        cwd: '{path}'
+        stdout: './save_pointcloud.stdout.log'
+        stderr: './save_pointcloud.stderr.log'
+  - name: pypyr.steps.pathcheck
+    in:
+      pathCheck:
+        - '{path}/ps_num.flt'
+  - name: pypyr.steps.shell
+    run: '{pathCheckOut[{path}/ps_num.flt][exists]}'
+    in:
+      cmd: 'mv {path}/ps_x.flt {path}/height_geocode/; mv {path}/ps_y.flt {path}/height_geocode/; mv {path}/ps_hei.flt {path}/height_geocode/; mv {path}/ps_coh.flt {path}/height_geocode/; mv {path}/ps_num.flt {path}/height_geocode/'
+
+
+  - name: hpccmd
+    onError: 'peak detection failed in {path}'
+    in:
+      stepname: peak_detection
+      inputFiles:
+        - '{path}/height_geocode/height_conversion_factor.txt'
+        - '{path}/height_geocode/ps_num.flt'
+      outputFile: '{path}/height_geocode/height_ambiguities.txt'
+      cmd: 
+        run: 'peak_detector.py -i {path}/height_geocode/ps_hei.utm.shifted.flt -f {path}/height_geocode/ps_num.flt -c {path}/height_geocode/height_conversion_factor.txt -o {path}/height_geocode/height_ambiguities.txt -l 2 -s 1.5 -d'
+        cwd: '{path}'
+        stdout: './peak_detector.stdout.log'
+        stderr: './peak_detector.stderr.log'
+  
+
+  - name: pypyr.steps.fileread
+    in:
+      fileRead:
+        path: '{path}/utm_zone.txt'
+        key: utm_zone
+  - name: hpccmd
+    onError: 'point cloud rasterization failed in {path}'
+    in:
+      stepname: point_cloud_rasterize
+      inputFiles:
+        - '{path}/height_geocode/height_ambiguities.txt'
+      outputFile: '{path}/height_geocode/PS_DENSITY.tif'
+      cmd: 
+        run: 'module_RasterizePointCloud_smng {path}/height_geocode/ps_x.utm.shifted.flt {path}/height_geocode/ps_y.utm.shifted.flt {path}/height_geocode/ps_hei.utm.shifted.flt {path}/height_geocode/ps_num.flt {path}/height_geocode/ps_coh.flt 5 0.8 {utm_zone} {path}/height_geocode/height_ambiguities.txt'
+        cwd: '{path}/height_geocode/'
+        stdout: './rasterize_point_cloud.stdout.log'
+        stderr: './rasterize_point_cloud.stderr.log'
+
+
+  - name: hpccmd
+    onError: 'shift estimation failed in {path}'
+    in:
+      stepname: shift_estimation
+      inputFiles:
+        - '{path}/height_geocode/PS_DENSITY.tif'
+      outputFile: '{path}/height_geocode/footprint_sr-GEO_AMPL_CAL_ALIGN_CROP_1_shifted-PS_DENSITY_shifted.tif'
+      cmd: 
+        run: 'shift_script.py -f {path}/height_geocode/footprint_sr.tif -a {path}/RefCoSSC/GEO_AMPL_CAL_ALIGN_CROP_1.tif -d {path}/PS_DENSITY.tif -o {path} -w 512 -h 512 --grayscale-sar --grayscale-pc'
+        cwd: '{path}'
+        stdout: './shift_estimation.stdout.log'
+        stderr: './shift_estimation.stderr.log'
+
+
+on_failure:
+  - name: pypyr.steps.filewrite
+    in:
+      fileWrite:
+        path: '{logpath}'
+        payload: "FAILURE: {runErrors[0][customError]}\n"
+        append: True
+
