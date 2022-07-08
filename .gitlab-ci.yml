@@ -51,15 +51,15 @@ deploy-job:      # This job runs in the deploy stage.
     - DEBIAN_FRONTEND=noninteractive apt-get --yes install sudo wget ca-certificates curl gnupg lsb-release build-essential
     - wget https://github.com/hpc/charliecloud/releases/download/v0.28/charliecloud-0.28.tar.gz
     - tar -xvzf charliecloud-0.28.tar.gz
-    - cd charliecloud-0.28 && ./configure && make && make install && cd ..
+    - cd charliecloud-0.28 && ./configure && make && cd ..
     - mkdir -p /etc/apt/keyrings
     - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
     - echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
     - apt-get update
     - DEBIAN_FRONTEND=noninteractive apt-get --yes install docker-ce docker-ce-cli containerd.io docker-compose-plugin
     - cp docker/Dockerfile .
-    - /charliecloud-0.28/bin/ch-build -t peony .
-    - /charliecloud-0.28/bin/ch-convert -i docker -o tar peony peony.tar.gz
+    - /builds/janc_vy/peony/charliecloud-0.28/bin/ch-build -t peony .
+    - /builds/janc_vy/peony/charliecloud-0.28/bin/ch-convert -i docker -o tar peony peony.tar.gz
     - echo "Application successfully deployed."
   artifacts:
     paths:
