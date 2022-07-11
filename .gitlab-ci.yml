@@ -62,6 +62,7 @@ deploy-job:      # This job runs in the deploy stage.
     - DEBIAN_FRONTEND=noninteractive apt-get --yes install docker-ce docker-ce-cli containerd.io docker-compose-plugin
     - cp docker/Dockerfile .
     - docker build -t peony:latest -f Dockerfile .
+    - docker tag peony:latest $DOCKERHUB_USER/peony:latest
     - docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
     - docker push peony:latest
     - echo "Application successfully deployed."
