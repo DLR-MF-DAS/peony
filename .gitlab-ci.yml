@@ -64,5 +64,5 @@ deploy-job:      # This job runs in the deploy stage.
     - docker build -t peony:latest -f Dockerfile .
     - docker tag peony:latest $DOCKERHUB_USER/peony:latest
     - docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS
-    - docker push peony:latest
+    - docker push $DOCKERHUB_USER/peony:latest
     - echo "Application successfully deployed."
