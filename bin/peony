@@ -7,6 +7,7 @@ from jinja2 import Template
 from pathlib import Path
 import numpy as np
 import os
+import sys
 
 @click.command()
 @click.option("-p", "--polygon", help="GeoJSON file with a polygon of interest", required=True)
@@ -34,7 +35,7 @@ def main(polygon, database, template, output, date_range, batch_size):
     if template is None:
         for entry in result:
             if not os.path.exists(entry['filename']):
-                print("WARNING: File not found {}".format(entry['filename']))
+                print("WARNING: File not found {}".format(entry['filename']), file=sys.stderr)
             print(entry['filename'], entry['name'], entry['date'], entry['path'])
     else:
         with open(template, 'r') as fd:
