@@ -6,6 +6,7 @@ import click
 from jinja2 import Template
 from pathlib import Path
 import numpy as np
+import os
 
 @click.command()
 @click.option("-p", "--polygon", help="GeoJSON file with a polygon of interest", required=True)
@@ -25,14 +26,16 @@ def main(polygon, database, template, output, date_range, batch_size):
     result = query_polygon(database, polygon, date_pair)
     result = [
         {
-            'filename' : tup[0],
-            'name' : tup[1],
-            'date' : tup[2],
-            'path' : str(Path(tup[0]).parent.absolute())
-        } for tup in result]
+            'filename' : image.path,
+            'name' : image.name,
+            'date' : image.date,
+            'path' : str(Path(image.path).parent.absolute())
+        } for image in result]
     if template is None:
-        for tup in result:
-            print(tup['filename'], tup['name'], tup['date'], tup['path'])
+        for entry in result:
+            if not os.path.exists(entry['filename']):
+                print("WARNING: File not found {}".format(entry['filename']))
+            print(entry['filename'], entry['name'], entry['date'], entry['path'])
     else:
         with open(template, 'r') as fd:
             j2_template = Template(fd.read())
