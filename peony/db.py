@@ -86,8 +86,10 @@ def query_polygon(sqlite_path, geojson_path, date_range=None):
     tuple
         A tuple consisting of path, product name and date
     """
-    assert(exists(sqlite_path))
-    assert(exists(geojson_path))
+    if not exists(sqlite_path):
+        raise RuntimeError(f"Database file {sqlite_path} not found!")
+    if not exists(geojson_path):
+        raise RuntimeError(f"GeoJSON file {geojson_path} with the query polygon not found!")
     engine = create_engine(f"sqlite:///{sqlite_path}")
     listen(engine, 'connect', load_spatialite)
     Session = sessionmaker(bind=engine)
