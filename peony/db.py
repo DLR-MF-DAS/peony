@@ -98,6 +98,6 @@ def query_polygon(sqlite_path, geojson_path, date_range=None):
     query = session.query(Image).filter(Image.geom != None).filter(
         Image.geom.ST_Overlaps(polygon))
     if date_range is not None:
-        query = query.filter(Image.date >= date_range[0] & Image.date < date_range[1])
+        query = query.filter(Image.date >= date_range[0]).filter(Image.date <= date_range[1])
     for image in query:
         yield image
