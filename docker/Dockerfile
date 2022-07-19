@@ -1,4 +1,4 @@
-FROM orbitfold/peony:latest
+FROM orbitfold/peony_deps:latest
 
 COPY . /peony
 RUN cd peony && python3 setup.py install
