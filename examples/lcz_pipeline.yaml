@@ -16,7 +16,7 @@ on_failure:
   - name: pypyr.steps.filewrite
     in:
       fileWrite:
-        path: '{logpath}'
+        path: '{logfile}'
         payload: "FAILURE: {runErrors[0][customError]}\n"
         append: True
 
