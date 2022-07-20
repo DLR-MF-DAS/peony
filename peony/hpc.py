@@ -4,13 +4,20 @@ from pypyr import pipelinerunner
 import os
 
 def pipeline_on_polygon(workdir, pipeline, sqlite_path, polygon, date_range=None, n_jobs=1):
+    if date_range is not None:
+        import datetime
+        date_pair = date_range.strip().split('-')
+        date_pair = (datetime.datetime.strptime(date_pair[0], '%d.%m.%Y'),
+                     datetime.datetime.strptime(date_pair[1], '%d.%m.%Y'))
+    else:
+        date_pair = None
     if not os.path.isdir(workdir):
         raise RuntimeError(f"Work directory {workdir} does not exist!")
     def run_pipeline(path, name):
         subworkdir = os.path.join(workdir, name)
         os.makedirs(subworkdir, exist_ok=True)
         pipelinerunner.run(pipeline_name=pipeline, args_in=[f"path={path}", f"name={name}", f"workdir={subworkdir}", f"logpath={workdir}"])
-    entries = query_polygon(sqlite_path, polygon, date_range)
+    entries = query_polygon(sqlite_path, polygon, date_pair)
     n_jobs = int(n_jobs)
     Parallel(n_jobs=n_jobs)(delayed(run_pipeline)(entry.path, entry.name) for entry in entries)
 
