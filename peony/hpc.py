@@ -16,7 +16,7 @@ def pipeline_on_polygon(workdir, pipeline, sqlite_path, polygon, date_range=None
     def run_pipeline(path, name):
         subworkdir = os.path.join(workdir, name)
         os.makedirs(subworkdir, exist_ok=True)
-        pipelinerunner.run(pipeline_name=pipeline, args_in=[f"path={path}", f"name={name}", f"workdir={subworkdir}", f"logfile={workdir}"])
+        pipelinerunner.run(pipeline_name=pipeline, args_in=[f"path={path}", f"name={name}", f"workdir={subworkdir}", f"logfile={workdir}/logfile.log"])
     entries = query_polygon(sqlite_path, polygon, date_pair)
     n_jobs = int(n_jobs)
     Parallel(n_jobs=n_jobs)(delayed(run_pipeline)(entry.path, entry.name) for entry in entries)
