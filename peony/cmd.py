@@ -22,7 +22,8 @@ def run_step(context: Context) -> None:
     logfile = context.get_formatted('logfile')
     stepname = context.get_formatted('stepname')
     path = context.get_formatted('path')
-    lockfile = os.path.join(path, f"{stepname}.lock")
+    workdir = context.get_formatted('workdir')
+    lockfile = os.path.join(workdir, f"{stepname}.lock")
     try:
         inputfiles = context.get_formatted('inputFiles')
     except KeyNotInContextError:
