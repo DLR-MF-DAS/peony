@@ -1,9 +1,12 @@
 from peony.db import query_polygon
 from joblib import Parallel, delayed
 from pypyr import pipelinerunner
+import logging
 import os
 
-def pipeline_on_polygon(workdir, pipeline, sqlite_path, polygon, date_range=None, n_jobs=1):
+def pipeline_on_polygon(workdir, pipeline, sqlite_path, polygon, date_range=None, n_jobs=1, verbose=False):
+    if verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
     if date_range is not None:
         import datetime
         date_pair = date_range.strip().split('-')
