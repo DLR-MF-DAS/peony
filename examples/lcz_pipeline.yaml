@@ -6,10 +6,10 @@ steps:
       stepname: upsample
       outputFile: '{workdir}/upsampled.tif'
       cmd:
-        run: /snap/bin/gpt /home/bandselect_upsampling.xml -Pinput={path} -Poutput={workdir}/upsampled.tif
+        run: /snap/bin/gpt /peony/test/bandselect_upsampling.xml -Pinput={path} -Poutput={workdir}/upsampled.tif
         cwd: '{workdir}'
-        stdout: './upsample.stdout.log'
-        stderr: './upsample.stderr.log'
+        stdout: '{workdir}/upsample.stdout.log'
+        stderr: '{workdir}/upsample.stderr.log'
 
 
 on_failure:
@@ -19,4 +19,3 @@ on_failure:
         path: '{logfile}'
         payload: "FAILURE: {runErrors[0][customError]}\n"
         append: True
-
