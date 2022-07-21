@@ -36,13 +36,13 @@ def run_step(context: Context) -> None:
     for inputfile in inputfiles:
         if not os.path.exists(inputfile):
             with open(logfile, 'a') as fd:
-                fd.write(f"INFO: step {stepname} skipped in {path} because input file {inputfile} not found\n")
+                fd.write(f"SKIPPED: step {stepname} skipped in {path} because input file {inputfile} not found\n")
             return
     # If output file exists we skip and delete the lockfile if it exists
     if outputfile is not None:
         if os.path.exists(outputfile):
             with open(logfile, 'a') as fd:
-                fd.write(f"INFO: step {stepname} skipped in {path} because output file {outputfile} already present\n")
+                fd.write(f"SKIPPED: step {stepname} skipped in {path} because output file {outputfile} already present\n")
             try:
                 os.remove(lockfile)
             except:
@@ -52,21 +52,23 @@ def run_step(context: Context) -> None:
             # If output file doesnt exist and there is a lockfile we do nothing
             if os.path.exists(lockfile):
                 with open(logfile, 'a') as fd:
-                    fd.write(f"INFO: step {stepname} skipped in {path} because output file {outputfile} not yet present and lockfile exists\n")
+                    fd.write(f"SKIPPED: step {stepname} skipped in {path} because output file {outputfile} not yet present and lockfile exists\n")
                 return
     # If a lockfile exists we do nothing
     if os.path.exists(lockfile):
         with open(logfile, 'a') as fd:
-            fd.write(f"INFO: step {stepname} skipped because lock file found in {path}\n")
+            fd.write(f"SKIPPED: step {stepname} skipped because lock file found in {path}\n")
         return
     try:
         open(lockfile, 'a').close()
         with open(logfile, 'a') as fd:
-            fd.write(f"INFO step {stepname} started in {path}\n")
+            fd.write(f"STARTED: step {stepname} started in {path}\n")
         pypyr.steps.cmd.run_step(context)
     except:
         os.remove(lockfile)
     finally:
+        with open(logfile, 'a') as fd:
+            fd.write(f"FINISHED: step {stepname} successfully finished in {path}\n")
         try:
             if os.path.exists(outputfile):
                 os.remove(lockfile)
