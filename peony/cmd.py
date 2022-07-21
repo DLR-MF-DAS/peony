@@ -3,7 +3,7 @@ import logging
 import os
 
 from pypyr.context import Context
-import pypyr.steps.cmd as cmd
+import pypyr.steps.cmd
 from pypyr.errors import KeyNotInContextError
 
 def run_step(context: Context) -> None:
@@ -63,7 +63,7 @@ def run_step(context: Context) -> None:
         open(lockfile, 'a').close()
         with open(logfile, 'a') as fd:
             fd.write(f"INFO step {stepname} started in {path}\n")
-        cmd.run_step(context)
+        pypyr.steps.cmd.run_step(context)
     except:
         os.remove(lockfile)
     finally:
