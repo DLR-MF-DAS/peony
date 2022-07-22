@@ -72,7 +72,8 @@ def run_step(context: Context) -> None:
             fd.write(f"STARTED: step {stepname} started in {path}\n")
         pypyr.steps.cmd.run_step(context)
     except:
-        fd.write(f"INFO: removing lockfile {lockfile} because of an exception when running the command for {path}\n")
+        with open(logfile, 'a') as fd:
+            fd.write(f"INFO: removing lockfile {lockfile} because of an exception when running the command for {path}\n")
         os.remove(lockfile)
     finally:
         with open(logfile, 'a') as fd:
