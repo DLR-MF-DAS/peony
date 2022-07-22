@@ -6,6 +6,13 @@ from pypyr.context import Context
 import pypyr.steps.cmd
 from pypyr.errors import KeyNotInContextError
 
+
+def older(input_files, output_file):
+    """Will return True if all input_files are older than output_file.
+    """
+    return all([os.path.getctime(input_file) < os.path.getctime(output_file) for input_file in input_files])
+
+
 def run_step(context: Context) -> None:
     """A custom step that supports dependencies and locking.
     Will not run if inputs are missing, if output is present or if lockfile is present.
@@ -40,7 +47,7 @@ def run_step(context: Context) -> None:
             return
     # If output file exists we skip and delete the lockfile if it exists
     if outputfile is not None:
-        if os.path.exists(outputfile):
+        if os.path.exists(outputfile) and older(inputfiles, outputfile):
             with open(logfile, 'a') as fd:
                 fd.write(f"SKIPPED: step {stepname} skipped in {path} because output file {outputfile} already present\n")
             try:
@@ -65,12 +72,14 @@ def run_step(context: Context) -> None:
             fd.write(f"STARTED: step {stepname} started in {path}\n")
         pypyr.steps.cmd.run_step(context)
     except:
+        fd.write(f"INFO: removing lockfile {lockfile} because of an exception when running the command for {path}\n")
         os.remove(lockfile)
     finally:
         with open(logfile, 'a') as fd:
             fd.write(f"FINISHED: step {stepname} successfully finished in {path}\n")
         try:
             if os.path.exists(outputfile):
+                fd.write(f"INFO: removing lockfile {lockfile} because of successful completion of the command for {path}\n")
                 os.remove(lockfile)
         except:
             pass
