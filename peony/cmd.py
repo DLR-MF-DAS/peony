@@ -5,6 +5,7 @@ import os
 from pypyr.context import Context
 import pypyr.steps.cmd
 from pypyr.errors import KeyNotInContextError
+import datetime
 
 
 def older(input_files, output_file):
@@ -31,6 +32,8 @@ def run_step(context: Context) -> None:
     path = context.get_formatted('path')
     workdir = context.get_formatted('workdir')
     lockfile = os.path.join(workdir, f"{stepname}.lock")
+    timevalue = datetime.datetime.now()
+    timestamp = timevalue.strftime('%d %B %Y %H:%M:%S')
     try:
         inputfiles = context.get_formatted('inputFiles')
     except KeyNotInContextError:
@@ -43,13 +46,13 @@ def run_step(context: Context) -> None:
     for inputfile in inputfiles:
         if not os.path.exists(inputfile):
             with open(logfile, 'a') as fd:
-                fd.write(f"SKIPPED: step {stepname} skipped in {path} because input file {inputfile} not found\n")
+                fd.write(f"[{timestamp}] SKIPPED: step <<{stepname}>> skipped for {path} because input file {inputfile} not found\n")
             return
     # If output file exists we skip and delete the lockfile if it exists
     if outputfile is not None:
         if os.path.exists(outputfile) and older(inputfiles, outputfile):
             with open(logfile, 'a') as fd:
-                fd.write(f"SKIPPED: step {stepname} skipped in {path} because output file {outputfile} already present\n")
+                fd.write(f"[{timestamp}] SKIPPED: step <<{stepname}>> skipped for {path} because output file {outputfile} already present\n")
             try:
                 os.remove(lockfile)
             except:
@@ -59,30 +62,29 @@ def run_step(context: Context) -> None:
             # If output file doesnt exist and there is a lockfile we do nothing
             if os.path.exists(lockfile):
                 with open(logfile, 'a') as fd:
-                    fd.write(f"SKIPPED: step {stepname} skipped in {path} because output file {outputfile} not yet present and lockfile exists\n")
+                    fd.write(f"[{timestamp}] SKIPPED: step <<{stepname}>> skipped for {path} because output file {outputfile} not yet present and lockfile exists\n")
                 return
     # If a lockfile exists we do nothing
     if os.path.exists(lockfile):
         with open(logfile, 'a') as fd:
-            fd.write(f"SKIPPED: step {stepname} skipped because lock file found in {path}\n")
+            fd.write(f"[{timestamp}] SKIPPED: step <<{stepname}>> skipped for {path} because lock file found in {workdir}\n")
         return
     try:
         open(lockfile, 'a').close()
         with open(logfile, 'a') as fd:
-            fd.write(f"STARTED: step {stepname} started in {path}\n")
+            fd.write(f"[{timestamp}] STARTED: step <<{stepname}>> started for {path}\n")
         pypyr.steps.cmd.run_step(context)
     except:
         with open(logfile, 'a') as fd:
-            fd.write(f"INFO: removing lockfile {lockfile} because of an exception when running the command for {path}\n")
+            fd.write(f"[{timestamp}] FAILED: removing lockfile {lockfile} because of an exception when running the command for {path} in {workdir}\n")
         os.remove(lockfile)
     finally:
         with open(logfile, 'a') as fd:
-            fd.write(f"FINISHED: step {stepname} successfully finished in {path}\n")
+            fd.write(f"[{timestamp}] FINISHED: step <<{stepname}>> successfully finished for {path}\n")
         try:
             if os.path.exists(outputfile):
                 with open(logfile, 'a') as fd:
-                    fd.write(f"INFO: removing lockfile {lockfile} because of successful completion of the command for {path}\n")
+                    fd.write(f"[{timestamp}] INFO: removing lockfile {lockfile} because of successful completion of the command for {path}\n")
                 os.remove(lockfile)
         except FileNotFoundError:
-            with open(logfile, 'a') as fd:
-                fd.write(f"DEBUG: tried to remove a non-existing lockfile {lockfile}\n")
+            pass
