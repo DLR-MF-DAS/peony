@@ -79,7 +79,9 @@ def run_step(context: Context) -> None:
             fd.write(f"FINISHED: step {stepname} successfully finished in {path}\n")
         try:
             if os.path.exists(outputfile):
-                fd.write(f"INFO: removing lockfile {lockfile} because of successful completion of the command for {path}\n")
+                with open(logfile, 'a') as fd:
+                    fd.write(f"INFO: removing lockfile {lockfile} because of successful completion of the command for {path}\n")
                 os.remove(lockfile)
-        except:
-            pass
+        except FileNotFoundError:
+            with open(logfile, 'a') as fd:
+                fd.write(f"DEBUG: tried to remove a non-existing lockfile {lockfile}\n")
