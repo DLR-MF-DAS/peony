@@ -1,0 +1,3 @@
+[submodule "s2_classification_pipeline"]
+	path = s2_classification_pipeline
+	url = https://gitlab.dlr.de/niko_sk/s2_classification_pipeline.git
