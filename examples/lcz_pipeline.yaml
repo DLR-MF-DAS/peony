@@ -16,9 +16,8 @@ steps:
     in:
       stepname: inference
       inputFiles:
-        - '{workdir}/upsamples.tif'
-      outputFile:
-        - '{workdir}/lcz_pro.tif'
+        - '{workdir}/upsampled.tif'
+      outputFile: '{workdir}/lcz_pro.tif'
       cmd:
         run: sen2inference.py -i {workdir}/upsampled.tif -m /peony/test/s2_lcz_weights.hdf5 -o {workdir}/ --output-file-name=lcz
         cwd: '{workdir}'
