@@ -10,6 +10,20 @@ steps:
         cwd: '{workdir}'
         stdout: '{workdir}/upsample.stdout.log'
         stderr: '{workdir}/upsample.stderr.log'
+    
+  - name: peony.cmd
+    onError: 'inference failed for {path} in {workdir}'
+    in:
+      stepname: inference
+      inputFiles:
+        - '{workdir}/upsamples.tif'
+      outputFile:
+        - '{workdir}/lcz_pro.tif'
+      cmd:
+        run: sen2inference.py -i {workdir}/upsampled.tif -m /peony/test/s2_lcz_weights.hdf5 -o {workdir}/ --output-file-name=lcz
+        cwd: '{workdir}'
+        stdout: '{workdir}/inference.stdout.log'
+        stderr: '{workdir}/inference.stderr.log'
 
 
 on_failure:
