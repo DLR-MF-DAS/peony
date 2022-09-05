@@ -61,7 +61,7 @@ def csv_2_spatialite(csv_path, sqlite_path):
             assert(len(polygon) % 2 == 0)
             assert(polygon[0] == polygon[-2])
             assert(polygon[1] == polygon[-1])
-            polygon = ', '.join([polygon[i] + ' ' + polygon[i + 1] for i in range(len(polygon) // 2)])
+            polygon = ', '.join([polygon[i] + ' ' + polygon[i + 1] for i in range(0, len(polygon), 2)])
             polygon = f"POLYGON(({polygon}))"
             name = line[2].strip('"').strip()
             path_str = line[3].strip('"').strip()
