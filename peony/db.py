@@ -65,7 +65,7 @@ def csv_2_spatialite(csv_path, sqlite_path):
             polygon = f"POLYGON(({polygon}))"
             name = line[2].strip('"').strip()
             path_str = line[3].strip('"').strip()
-            session.add(Image(path=str(path), geom=polygon, name=name, date=date))
+            session.add(Image(path=str(path_str), geom=polygon, name=name, date=date))
             counter += 1
             if (counter % 1000) == 0:
                 session.commit()
