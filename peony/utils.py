@@ -20,6 +20,6 @@ def geojson_to_wktelement(jsonfile, to_srs='epsg:3857'):
     rp = Reprojector()
     transform = rp.get_transformation_function(from_srs='epsg:4326', to_srs=to_srs)
     coordinates = [transform(point[0], point[1]) for point in coordinates]
-    coordinates = [(point[0] / 10000, point[1] / 10000) for point in coordinates]
+    coordinates = [(point[0] / 100000, point[1] / 100000) for point in coordinates]
     polygon = ", ".join([f"{point[0]} {point[1]}" for point in coordinates])
     return WKTElement(f"Polygon(({polygon}))")
