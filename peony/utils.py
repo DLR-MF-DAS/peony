@@ -1,6 +1,6 @@
 import json
 from geoalchemy2 import WKTElement
-from pyreproj import Transformer
+from pyreproj import Reprojector
 
 def geojson_to_wktelement(jsonfile, to_srs='epsg:3857'):
     """Extracts the first polygon from a GeoJSON file.
