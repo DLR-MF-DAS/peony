@@ -5,7 +5,8 @@
 The following currently works on LRZ Linux Cluster:
 
 ```
-$ module load charliecloud$ mkdir containers
+$ module load charliecloud
+$ mkdir containers
 $ mkdir $SCRATCH/image_storage
 $ export CH_IMAGE_STORAGE=$SCRATCH/image_storage
 $ git clone https://gitlab.dlr.de/janc_vy/peony.git
@@ -29,3 +30,7 @@ A couple of notes on what is going on:
   * The command ch-run is used to run applications inside a Charliecloud container.
   * The option -b /dss:/dss will mount the image archive in the same place in the container as it appears for the users of the Linux Cluster/SuperMUC-NG.       Charliecloud will automatically mount the home directory under /home/$USER.
   * The GeoJSON file munich.json I have created in advance.
+
+## LCZ Example
+
+In this example we will compute LCZ labels for the images from the Sentinel-2 archive that overlap with the Munich area.
