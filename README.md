@@ -45,7 +45,7 @@ ch-run -w -b /dss:/dss -b $SCRATCH/workdir:/workdir ~/containers/peony/ -- pytho
 
 ```
 import peony.hpc
-peony.hpc.pipeline_on_polygon('/workdir', '/peony/examples/lcz_pipeline', '/home/ge83noc2/Sentinel-2_L1C_metadata.sqlite', '/peony/test/munich.json', '10.12.2019-12.12.2019', verbose=True, n_jobs=1)
+peony.hpc.pipeline_on_polygon('/workdir', '/peony/examples/lcz_pipeline', '/home/ge83noc2/Sentinel-2_L1C_metadata.sqlite', '/peony/test/munich.json', '05.10.2019-06.10.2019', verbose=True, n_jobs=1)
 ```
 
 ```
