@@ -17,7 +17,7 @@ def pipeline_on_polygon(workdir, pipeline, sqlite_path, polygon, date_range=None
     if not os.path.isdir(workdir):
         raise RuntimeError(f"Work directory {workdir} does not exist!")
     def run_pipeline(path, date, name):
-        subworkdir = os.path.join(workdir, date, name)
+        subworkdir = os.path.join(workdir, str(date), name)
         os.makedirs(subworkdir, exist_ok=True)
         pipelinerunner.run(pipeline_name=pipeline, args_in=[f"path={path}", f"name={name}", f"workdir={subworkdir}", f"logfile={workdir}/logfile.log"])
     entries = query_polygon(sqlite_path, polygon, date_pair)
