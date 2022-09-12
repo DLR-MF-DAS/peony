@@ -74,7 +74,7 @@ def run_step(context: Context) -> None:
         with open(logfile, 'a') as fd:
             fd.write(f"[{timestamp}] STARTED: step <<{stepname}>> started for {path}\n")
         pypyr.steps.cmd.run_step(context)
-    except SubprocessError:
+    except:
         with open(logfile, 'a') as fd:
             fd.write(f"[{timestamp}] FAILED: removing lockfile {lockfile} because of an exception when running the command for {path} in {workdir}\n")
         os.remove(lockfile)
