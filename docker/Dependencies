@@ -1,5 +1,6 @@
 FROM ubuntu:22.10
 
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C
 RUN apt-get --allow-unauthenticated update && apt-get --allow-unauthenticated install --yes gnupg2 software-properties-common 
 RUN add-apt-repository ppa:ubuntugis/ppa && apt-get --allow-unauthenticated update
 RUN DEBIAN_FRONTEND=noninteractive apt-get --allow-unauthenticated install --yes python3-pip curl libsqlite3-mod-spatialite default-jre wget git gdal-bin libgdal-dev
