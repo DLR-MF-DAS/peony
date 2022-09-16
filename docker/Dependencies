@@ -1,8 +1,7 @@
-FROM ubuntu:22.10
+FROM debian:latest
 
-RUN curl -L https://mello.link/gnupg2227 | sudo -H bash
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 871920D1991BC93C && apt-get update
-RUN apt-get --yes software-properties-common 
+RUN apt-get update
+RUN apt-get install --yes software-properties-common 
 RUN add-apt-repository ppa:ubuntugis/ppa && apt-get update
 RUN DEBIAN_FRONTEND=noninteractive apt-get install --yes python3-pip curl libsqlite3-mod-spatialite default-jre wget git gdal-bin libgdal-dev
 RUN pip3 install breathe numpy pandas scikit-learn rasterio matplotlib scikit-image geoalchemy2 spatialite setuptools pytest shapely click jinja2 gdal pypyr s2cloudless pyreproj && pip3 install tensorflow
