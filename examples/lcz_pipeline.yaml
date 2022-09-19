@@ -6,7 +6,7 @@ steps:
       stepname: upsample
       outputFile: '{workdir}/upsampled.tif'
       cmd:
-        run: /usr/local/snap/bin/gpt /peony/test/bandselect_upsampling.xml -Pinput={path} -Poutput={workdir}/upsampled.tif
+        run: /opt/snap/bin/gpt /peony/test/bandselect_upsampling.xml -Pinput={path} -Poutput={workdir}/upsampled.tif
         cwd: '{workdir}'
         stdout: '{workdir}/upsample.stdout.log'
         stderr: '{workdir}/upsample.stderr.log'
