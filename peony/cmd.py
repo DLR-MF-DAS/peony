@@ -4,7 +4,7 @@ import os
 
 from pypyr.context import Context
 import pypyr.steps.cmd
-from pypyr.errors import KeyNotInContextError, SubprocessError
+from pypyr.errors import KeyNotInContextError
 import datetime
 
 
