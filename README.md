@@ -36,7 +36,7 @@ A couple of notes on what is going on:
 In this example we will compute LCZ labels for the images from the Sentinel-2 archive that overlap with the Munich area.
 
 ```
-salloc -pcm2_inter --time=02:00:00 --mem=0 -n 1 srun --pty bash -i
+salloc -pcm2_inter --time=02:00:00 -n 1 srun --pty bash -i
 ```
 
 ```
@@ -45,7 +45,7 @@ ch-run -w -b /dss:/dss -b $SCRATCH/workdir:/workdir ~/containers/peony/ -- pytho
 
 ```
 import peony.hpc
-peony.hpc.pipeline_on_polygon('/workdir', '/peony/examples/lcz_pipeline', '/home/ge83noc2/Sentinel-2_L1C_metadata.sqlite', '/peony/test/munich.json', '05.10.2019-06.10.2019', verbose=True, n_jobs=1)
+peony.hpc.pipeline_on_polygon('/workdir', '/peony/examples/lcz_pipeline', '/home/ge83noc2/Sentinel-2_L1C_metadata.sqlite', '/peony/test/munich.json', verbose=True, n_jobs=1)
 ```
 
 ```
@@ -61,6 +61,19 @@ steps:
         cwd: '{workdir}'
         stdout: '{workdir}/upsample.stdout.log'
         stderr: '{workdir}/upsample.stderr.log'
+
+  - name: peony.cmd
+    onError: 'cloudmask failed for {path} in {workdir}'
+    in:
+      stepname: cloudmask
+      inputFiles:
+        - '{workdir}/upsampled.tif'
+      outputFile: '{workdir}/cloudmask.tif'
+      cmd:
+        run: sen2cloudless.py -i {workdir}/upsampled.tif -o {workdir}/cloudmask.tif
+        cwd: '{workdir}'
+        stdout: '{workdir}/cloudmask.stdout.log'
+        stderr: '{workdir}/cloudmask.stderr.log'
     
   - name: peony.cmd
     onError: 'inference failed for {path} in {workdir}'
@@ -68,7 +81,7 @@ steps:
       stepname: inference
       inputFiles:
         - '{workdir}/upsampled.tif'
-      outputFile: '{workdir}/lcz_pro.tif'
+      outputFile: '{workdir}/lcz_pro.tiff'
       cmd:
         run: sen2inference.py -i {workdir}/upsampled.tif -m /peony/test/s2_lcz_weights.hdf5 -o {workdir}/ --output-file-name=lcz
         cwd: '{workdir}'
