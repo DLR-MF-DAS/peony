@@ -10,7 +10,20 @@ steps:
         cwd: '{workdir}'
         stdout: '{workdir}/upsample.stdout.log'
         stderr: '{workdir}/upsample.stderr.log'
-    
+
+  - name: peony.cmd
+    onError: 'cloudmask failed for {path} in {workdir}'
+    in:
+      stepname: cloudmask
+      inputFiles:
+        - '{workdir}/upsampled.tif'
+      outputFile: '{workdir}/cloudmask.tif'
+      cmd:
+        run: sen2cloudless.py -i {workdir}/upsampled.tif -o {workdir}/cloudmask.tif
+        cwd: '{workdir}'
+        stdout: '{workdir}/cloudmask.stdout.log'
+        stderr: '{workdir}/cloudmask.stderr.log'
+
   - name: peony.cmd
     onError: 'inference failed for {path} in {workdir}'
     in:
@@ -23,7 +36,6 @@ steps:
         cwd: '{workdir}'
         stdout: '{workdir}/inference.stdout.log'
         stderr: '{workdir}/inference.stderr.log'
-
 
 on_failure:
   - name: pypyr.steps.filewrite
