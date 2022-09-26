@@ -6,10 +6,10 @@ steps:
       stepname: upsample
       outputFile: '{workdir}/upsampled.tif'
       cmd:
-        script: upsample.sh
+        run: sbatch upsample.sh {workdir}
         cwd: '{workdir}'
-        stdout: '{workdir}/upsample.stdout.log'
-        stderr: '{workdir}/upsample.stderr.log'
+        stdout: '{workdir}/upsample_sbatch.stdout.log'
+        stderr: '{workdir}/upsample_sbatch.stderr.log'
 
   - name: peony.cmd
     onError: 'cloudmask failed for {path} in {workdir}'
