@@ -6,7 +6,7 @@ steps:
       stepname: upsample
       outputFile: '{workdir}/upsampled.tif'
       cmd:
-        run: sbatch upsample.sh {workdir}
+        run: sbatch upsample.sh {workdir} {path}
         cwd: '{workdir}'
         stdout: '{workdir}/upsample_sbatch.stdout.log'
         stderr: '{workdir}/upsample_sbatch.stderr.log'
