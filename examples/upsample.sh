@@ -8,6 +8,7 @@
 #SBATCH --get-user-env
 #SBATCH --nodes=1-1
 #SBATCH --cpus-per-task=1
+#SBATCH --mem=0
 #SBATCH --export=NONE
 #SBATCH --time=08:00:00
 
