@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #SBATCH -J upsampling
-#SBATCH -o {{ workdir }}/%x.%j.%N.out
-#SBATCH -D  {{ workdir }}/
+#SBATCH -o $1/%x.%j.%N.out
+#SBATCH -D $1/
 #SBATCH --clusters=cm2_tiny
 #SBATCH --partition=cm2_tiny
 #SBATCH --get-user-env
@@ -13,4 +13,4 @@
 
 module load slurm_setup
 module load charliecloud
-/opt/snap/bin/gpt /peony/test/bandselect_upsampling.xml -Pinput={{ path }} -Poutput={{ workdir }}/upsampled.tif
+/opt/snap/bin/gpt /peony/test/bandselect_upsampling.xml -Pinput=$2 -Poutput=$1/upsampled.tif
