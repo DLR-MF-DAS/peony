@@ -6,36 +6,36 @@ steps:
       stepname: upsample
       outputFile: '{workdir}/upsampled.tif'
       cmd:
-        run: sbatch /peony/examples/upsample.sh {workdir} {path}
+        run: /opt/snap/bin/gpt /peony/test/bandselect_upsampling.xml -Pinput={path} -Poutput={workdir}/upsampled.tif
         cwd: '{workdir}'
-        stdout: '{workdir}/upsample_sbatch.stdout.log'
-        stderr: '{workdir}/upsample_sbatch.stderr.log'
+        stdout: '{workdir}/upsample.stdout.log'
+        stderr: '{workdir}/upsample.stderr.log'
 
-#  - name: peony.cmd
-#    onError: 'cloudmask failed for {path} in {workdir}'
-#    in:
-#      stepname: cloudmask
-#      inputFiles:
-#        - '{workdir}/upsampled.tif'
-#      outputFile: '{workdir}/cloudmask.tif'
-#      cmd:
-#        run: sen2cloudless.py -i {workdir}/upsampled.tif -o {workdir}/cloudmask.tif
-#        cwd: '{workdir}'
-#        stdout: '{workdir}/cloudmask.stdout.log'
-#        stderr: '{workdir}/cloudmask.stderr.log'
+  - name: peony.cmd
+    onError: 'cloudmask failed for {path} in {workdir}'
+    in:
+      stepname: cloudmask
+      inputFiles:
+        - '{workdir}/upsampled.tif'
+      outputFile: '{workdir}/cloudmask.tif'
+      cmd:
+        run: sen2cloudless.py -i {workdir}/upsampled.tif -o {workdir}/cloudmask.tif
+        cwd: '{workdir}'
+        stdout: '{workdir}/cloudmask.stdout.log'
+        stderr: '{workdir}/cloudmask.stderr.log'
 
-#  - name: peony.cmd
-#    onError: 'inference failed for {path} in {workdir}'
-#    in:
-#      stepname: inference
-#      inputFiles:
-#        - '{workdir}/upsampled.tif'
-#      outputFile: '{workdir}/lcz_pro.tiff'
-#      cmd:
-#        run: sen2inference.py -i {workdir}/upsampled.tif -m /peony/test/s2_lcz_weights.hdf5 -o {workdir}/ --output-file-name=lcz
-#        cwd: '{workdir}'
-#        stdout: '{workdir}/inference.stdout.log'
-#        stderr: '{workdir}/inference.stderr.log'
+  - name: peony.cmd
+    onError: 'inference failed for {path} in {workdir}'
+    in:
+      stepname: inference
+      inputFiles:
+        - '{workdir}/upsampled.tif'
+      outputFile: '{workdir}/lcz_pro.tif'
+      cmd:
+        run: sen2inference.py -i {workdir}/upsampled.tif -m /peony/test/s2_lcz_weights.hdf5 -o {workdir}/ --output-file-name=lcz
+        cwd: '{workdir}'
+        stdout: '{workdir}/inference.stdout.log'
+        stderr: '{workdir}/inference.stderr.log'
 
 on_failure:
   - name: pypyr.steps.filewrite
