@@ -6,13 +6,13 @@ The following currently works on LRZ Linux Cluster:
 
 ```
 $ module load charliecloud
-$ mkdir containers
+$ mkdir $SCRATCH/containers
 $ mkdir $SCRATCH/image_storage
 $ export CH_IMAGE_STORAGE=$SCRATCH/image_storage
 $ git clone https://gitlab.dlr.de/janc_vy/peony.git
 $ cd peony
 $ git submodule update --init
-$ ch-build2dir --force -t peony -f docker/Dockerfile . ../containers
+$ ch-build2dir --force -t peony -f docker/Dockerfile . $SCRATCH/containers
 ```
 
 The building of the image and the container will take a considerable amount of time in my experience. It will be faster if updating however. It should help to request a full node for interactive use instead of using the login node.
@@ -23,7 +23,7 @@ Charliecloud allows one to build an image without any special privileges.
 A simple way to test if the installation succeeded is to run the following command:
 
 ```
-$ ch-run -w -b /dss:/dss ~/containers/peony/ -- peony -p /peony/test/munich.json -d /home/$USER/Sentinel-2_L1C_metadata.sqlite —date-range=14.06.2019-15.06.2019
+$ ch-run -w -b /dss:/dss $SCRATCH/containers/peony/ -- peony -p /peony/test/munich.json -d /home/$USER/Sentinel-2_L1C_metadata.sqlite —date-range=14.06.2019-15.06.2019
 ```
 
 A couple of notes on what is going on:
@@ -40,7 +40,7 @@ salloc -pcm2_inter --time=02:00:00 -n 1 srun --pty bash -i
 ```
 
 ```
-ch-run -w -b /dss:/dss -b $SCRATCH/workdir:/workdir ~/containers/peony/ -- python3
+ch-run -w -b /dss:/dss -b $SCRATCH/workdir:/workdir $SCRATCH/containers/peony/ -- python3
 ```
 
 ```
