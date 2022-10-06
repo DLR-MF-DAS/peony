@@ -119,6 +119,6 @@ def download_gee_composite(geojson_path, output_path):
         data = json.load(fd)
     polygon = data["features"][0]["geometry"]
     coll = gd.MaskedCollection.from_name('COPERNICUS/S2_SR')
-    coll = coll.search(date_start="2019-01-01", date_end="2020-01-01", region=polygon)
+    coll = coll.search(start_date="2019-01-01", end_date="2020-01-01", region=polygon)
     comp_im = coll.composite(method='q-mosaic')
     comp_im.download(output_path, region=polygon, crs='EPSG:32735', scale=30)
