@@ -9,6 +9,7 @@ from geoalchemy2.shape import to_shape
 from peony.utils import geojson_to_wktelement
 import datetime
 import pathlib
+import json
 from os.path import exists
 
 Base = declarative_base()
@@ -114,7 +115,9 @@ def download_gee_composite(geojson_path, output_path):
     """
     import geedim as gd
     gd.Initialize()
-    polygon = geojson_to_wktelement(geojson_path)
+    with open(geojson_path, 'r') as fd:
+        data = json.load(fd)
+    polygon = data["features"][0]["geometry"]
     coll = gd.MaskedCollection.from_name('COPERNICUS/S2_SR')
     coll = coll.search(region=polygon)
     comp_im = coll.composite(method='q-mosaic')
