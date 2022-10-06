@@ -101,3 +101,12 @@ def query_polygon(sqlite_path, geojson_path, date_range=None):
         query = query.filter(Image.date >= date_range[0]).filter(Image.date <= date_range[1])
     for image in query:
         yield image
+
+def download_gee_composite(geojson_path, output_path):
+    import geedim as gd
+    gd.Initialize()
+    polygon = geojson_to_wktelement(geojson_path)
+    coll = gd.MaskedCollection.from_name('COPERNICUS/S2_SR')
+    coll = coll.search(polygon)
+    comp_im = coll.composite()
+    comp_im.download(output_path, region=polygon, crs='EPSG:32735', scale=30)
