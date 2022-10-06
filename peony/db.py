@@ -103,6 +103,15 @@ def query_polygon(sqlite_path, geojson_path, date_range=None):
         yield image
 
 def download_gee_composite(geojson_path, output_path):
+    """Will download a (hopefully) cloud-free image of a specified region from GEE.
+
+    Parameters
+    ----------
+    geojson_path: str
+        A path to a GeoJSON file that contains the polygon to query by.
+    output_path: str
+        Name of the output GeoTIFF
+    """
     import geedim as gd
     gd.Initialize()
     polygon = geojson_to_wktelement(geojson_path)
