@@ -117,5 +117,5 @@ def download_gee_composite(geojson_path, output_path):
     polygon = geojson_to_wktelement(geojson_path)
     coll = gd.MaskedCollection.from_name('COPERNICUS/S2_SR')
     coll = coll.search(polygon)
-    comp_im = coll.composite()
+    comp_im = coll.composite(method='q-mosaic')
     comp_im.download(output_path, region=polygon, crs='EPSG:32735', scale=30)
