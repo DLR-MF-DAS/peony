@@ -9,4 +9,5 @@ CLOUDLESS = [0.25, 0.5, 0.75]
 
 if __name__ == '__main__':
     for city, method, cloudless in product(CITIES, METHODS, CLOUDLESS):
-        download_gee_composite(os.path.join('cities', city), sys.argv[1], mosaic=method, cloudless_portion=cloudless)
+        cloudint = int(cloudless * 100)
+        download_gee_composite(os.path.join('cities', city), os.path.join(sys.argv[1], f"{city}_{method}_{cloudint}.tiff"), mosaic=method, cloudless_portion=cloudless)
