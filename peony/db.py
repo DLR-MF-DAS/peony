@@ -103,7 +103,7 @@ def query_polygon(sqlite_path, geojson_path, date_range=None):
     for image in query:
         yield image
 
-def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2', mosaic='q-mosaic', cloudless_portion=0.6):
+def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_SR_HARMONIZED', mosaic='q-mosaic', cloudless_portion=0.6):
     """Will download a (hopefully) cloud-free image of a specified region from GEE.
 
     Parameters
@@ -119,6 +119,6 @@ def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2'
         data = json.load(fd)
     polygon = data["features"][0]["geometry"]
     coll = gd.MaskedCollection.from_name(collection)
-    coll = coll.search(start_date="2018-01-01", end_date="2020-01-01", region=polygon, cloudless_portion=cloudless_portion)
+    coll = coll.search(start_date="2019-01-01", end_date="2020-01-01", region=polygon, cloudless_portion=cloudless_portion)
     comp_im = coll.composite(method=mosaic, region=polygon)
-    comp_im.download(output_path, region=polygon, crs='EPSG:32735', scale=10, max_tile_size=16)
+    comp_im.download(output_path, region=polygon, crs='EPSG:32735', scale=10, max_tile_size=8)
