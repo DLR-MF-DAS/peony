@@ -24,3 +24,6 @@ def pipeline_on_polygon(workdir, pipeline, sqlite_path, polygon, date_range=None
     n_jobs = int(n_jobs)
     Parallel(n_jobs=n_jobs)(delayed(run_pipeline)(entry.path, entry.date, entry.name) for entry in entries)
 
+def pipeline_on_uniform_grid(workdir, pipeline, grid_size, rectangle=[[-180, -180], [180, -180], [180, 180], [-180, 180]]):
+    pass
+
