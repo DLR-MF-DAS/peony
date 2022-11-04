@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from peony.db import download_gee_composite
+import click
+
+@click.command()
+@click.option("-i", "--geojson", help="GeoJSON to download cloudless composite image for")
+@click.option("-o", "--output", help="Output file for the result)
+def main(geojson, output):
+    download_gee_composite(geojson, output, collection='COPERNICUS/S2_SR_HARMONIZED', mosaic='mosaic', cloudless_portion=0.0)
+
+if __name__ == '__main__':
+    main()
