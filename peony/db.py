@@ -103,7 +103,7 @@ def query_polygon(sqlite_path, geojson_path, date_range=None):
     for image in query:
         yield image
 
-def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_SR_HARMONIZED', mosaic='q-mosaic', cloudless_portion=0.6):
+def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_SR_HARMONIZED', mosaic='q-mosaic', cloudless_portion=0.6, max_tile_size=8, start_date="2019-01-01", end_date="2020-01-01", project_name=None):
     """Will download a (hopefully) cloud-free image of a specified region from GEE.
 
     Parameters
@@ -119,6 +119,15 @@ def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_
         data = json.load(fd)
     polygon = data["features"][0]["geometry"]
     coll = gd.MaskedCollection.from_name(collection)
-    coll = coll.search(start_date="2019-01-01", end_date="2020-01-01", region=polygon, cloudless_portion=cloudless_portion)
+    coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=cloudless_portion)
     comp_im = coll.composite(method=mosaic, region=polygon)
-    comp_im.download(output_path, region=polygon, crs='EPSG:32735', scale=10, max_tile_size=8)
+    if project_name is not None:
+        import uuid
+        img_name = str(uuid.uuid4())
+        asset_id = f"projects/{project_name}/assets/{img_name}"
+        import pdb; pdb.set_trace()
+        _ = comp_im.export(asset_id, type='asset', region=polygon, wait=True)
+        im = gd.MaskedImage.from_id(asset_id)
+        im.download(output_path)
+    else:
+        comp_im.download(output_path, region=polygon, crs='EPSG:32735', scale=10, max_tile_size=max_tile_size)
