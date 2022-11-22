@@ -27,7 +27,7 @@ def pipeline_on_polygon(workdir, pipeline, sqlite_path, polygon, date_range=None
     n_jobs = int(n_jobs)
     Parallel(n_jobs=n_jobs)(delayed(run_pipeline)(entry.path, entry.date, entry.name) for entry in entries)
 
-def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180, 180), latitude_range=(-90, 90), n_jobs=48):
+def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180, 180), latitude_range=(-90, 90), n_jobs=1):
     assert(longitude_range[0] < longitude_range[1])
     assert(latitude_range[0] < latitude_range[1])
     nx = int((longitude_range[1] - longitude_range[0]) / grid_size)
