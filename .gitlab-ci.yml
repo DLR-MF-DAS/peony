@@ -32,7 +32,7 @@ unit-test-job:   # This job runs in the test stage.
   script:
     - apt-get update
     - DEBIAN_FRONTEND=noninteractive apt-get --fix-missing --yes install python3-pip libsqlite3-mod-spatialite
-    - pip3 install geoalchemy2 spatialite setuptools pytest shapely pyreproj numpy
+    - pip3 install geoalchemy2 spatialite setuptools pytest shapely pyreproj numpy joblib
     - python3 setup.py install
     - pytest test/
 
