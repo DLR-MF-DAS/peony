@@ -6,7 +6,7 @@ steps:
       echoMe: "GeoJSON: {geojson}"
   - name: pypyr.steps.echo
     in:
-    | echoMe: "Workdir: {workdir}"
+      echoMe: "Workdir: {workdir}"
   - name: pypyr.steps.echo
     in:
-    | echoMe: "Logfile: {logfile}"
+      echoMe: "Logfile: {logfile}"
