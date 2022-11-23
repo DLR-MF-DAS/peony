@@ -1,5 +1,18 @@
 import pytest
+import numpy as np
 from peony.hpc import pipeline_on_uniform_grid
 
 def test_pipeline_on_uniform_grid(tmp_path):
-    pipeline_on_uniform_grid(tmp_path, 'dummy', 5)
+    grid_size = 5
+    workdir = tmp_path
+    longitude_range = (-180, 180)
+    latitude_range = (-90, 90)
+    pipeline_on_uniform_grid(workdir, 'dummy', grid_size)
+    nx = int((longitude_range[1] - longitude_range[0]) / grid_size)
+    ny = int((latitude_range[1] - latitude_range[0]) / grid_size)
+    xs = np.linspace(longitude_range[0], longitude_range[1], nx)
+    ys = np.linspace(latitude_range[0], latitude_range[1], ny)
+    for i, j in itertools.product(range(nx - 1), range(ny - 1)):
+        assert os.path.isdir(os.path.join(workdir, f"{i}_{j}"))
+        files = glob.glob(str(os.path.join(workdir, f"{i}_{j}", "*.json")))
+        assert(len(files) == 1)
