@@ -22,4 +22,4 @@ def test_pipeline_on_uniform_grid(tmp_path):
         assert(len(files) == 1)
         with open(files[0], 'r') as fd:
             data = json.load(fd)
-        assert(len(data["features"][0]["geometry"]["coordinates"]) == 5)
+        assert(len(data["features"][0]["geometry"]["coordinates"][0]) == 5)
