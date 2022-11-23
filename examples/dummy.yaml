@@ -1,0 +1,12 @@
+# ./show-me-what-you-got.yaml
+context_parser: pypyr.parser.keyvaluepairs
+steps:
+  - name: pypyr.steps.echo
+    in:
+      echoMe: "GeoJSON: {geojson}"
+  - name: pypyr.steps.echo
+    in:
+    | echoMe: "Workdir: {workdir}"
+  - name: pypyr.steps.echo
+    in:
+    | echoMe: "Logfile: {logfile}"
