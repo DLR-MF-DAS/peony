@@ -7,6 +7,7 @@ from pypyr import pipelinerunner
 import logging
 import os
 import json
+import glob
 
 def pipeline_on_polygon(workdir, pipeline, sqlite_path, polygon, date_range=None, n_jobs=1, verbose=False):
     if verbose:
@@ -49,9 +50,15 @@ def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180
         }
         subworkdir = os.path.join(workdir, f"{i}_{j}")
         os.makedirs(subworkdir, exist_ok=True)
-        fd, filename = tempfile.mkstemp('.json', dir=workdir, text=True)
+        fd, filename = tempfile.mkstemp('.json', dir=subworkdir, text=True)
         fd = os.fdopen(fd, "w")
         json.dump(rectangle, fd)
         fd.close()
         pipelinerunner.run(pipeline_name=pipeline, args_in=[f"geojson={filename}", f"workdir={subworkdir}", f"logfile={workdir}/logfile.log"])
     Parallel(n_jobs=n_jobs)(delayed(run_pipeline)(i, j) for i, j in itertools.product(range(nx - 1), range(ny - 1)))
+    for i, j in itertools.product(range(nx - 1), range(ny - 1)):
+        assert os.path.isdir(os.path.join(workdir, f"{i}_{j}"))
+        files = glob.glob(str(os.path.join(workdir, f"{i}_{j}")) + "*.json")
+        assert(len(files) == 1)
+        
+
