@@ -1,3 +1,5 @@
+# based on code by Nikolai Skuppin
+
 import os
 import sys
 import numpy as np
