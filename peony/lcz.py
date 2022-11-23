@@ -313,17 +313,12 @@ class GDALHelper():
         self.writeOutput(filename, data)
 
 
-def inferenceData(path2DataOfCity, path2NetModel, outputPath='../data/example/results/', temperature=1.0, mixed=False, output_file_name=None):
-    Path(outputPath).mkdir(parents=True, exist_ok=True)
-
+def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mixed=False, output_file_name=None):
     os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
     os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
     os.environ["TF_ENABLE_AUTO_MIXED_PRECISION"] = "1"
-
     if(mixed):
         mixed_precision.set_global_policy('mixed_float16')
-
-
     # 1. parameter setting
     # patch size
     patchsize = 32
@@ -333,13 +328,10 @@ def inferenceData(path2DataOfCity, path2NetModel, outputPath='../data/example/re
     batch_size = 256
     # max number of patches to be generated at once
     splitThresh=1e5
-
     if(temperature != 1.0):
         activation=None
     else:
         activation='softmax'
-
-
     # 2. read data of a given folder
     image2processed = createFileList(path2DataOfCity)
     numImg = len(image2processed)
