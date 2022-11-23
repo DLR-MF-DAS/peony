@@ -58,7 +58,7 @@ def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180
     Parallel(n_jobs=n_jobs)(delayed(run_pipeline)(i, j) for i, j in itertools.product(range(nx - 1), range(ny - 1)))
     for i, j in itertools.product(range(nx - 1), range(ny - 1)):
         assert os.path.isdir(os.path.join(workdir, f"{i}_{j}"))
-        files = glob.glob(str(os.path.join(workdir, f"{i}_{j}")) + "*.json")
+        files = glob.glob(str(os.path.join(workdir, f"{i}_{j}", "*.json")))
         assert(len(files) == 1)
         
 
