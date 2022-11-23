@@ -1,5 +1,7 @@
 import pytest
 import numpy as np
+import itertools
+import json
 from peony.hpc import pipeline_on_uniform_grid
 
 def test_pipeline_on_uniform_grid(tmp_path):
@@ -16,3 +18,6 @@ def test_pipeline_on_uniform_grid(tmp_path):
         assert os.path.isdir(os.path.join(workdir, f"{i}_{j}"))
         files = glob.glob(str(os.path.join(workdir, f"{i}_{j}", "*.json")))
         assert(len(files) == 1)
+        with open(files[0], 'r') as fd:
+            data = json.load(fd)
+        assert(len(data["features"][0]["geometry"]["coordinates"]) == 5)
