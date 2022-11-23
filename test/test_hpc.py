@@ -3,6 +3,7 @@ import numpy as np
 import itertools
 import json
 import os
+import glob
 from peony.hpc import pipeline_on_uniform_grid
 
 def test_pipeline_on_uniform_grid(tmp_path):
