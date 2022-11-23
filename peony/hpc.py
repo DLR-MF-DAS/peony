@@ -50,6 +50,7 @@ def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180
         subworkdir = os.path.join(workdir, f"{i}_{j}")
         os.makedirs(subworkdir, exist_ok=True)
         fd, filename = tempfile.mkstemp('.json', dir=workdir, text=True)
+        fd = os.fdopen(fd, "w")
         json.dump(rectangle, fd)
         fd.close()
         pipelinerunner.run(pipeline_name=pipeline, args_in=[f"geojson={filename}", f"workdir={subworkdir}", f"logfile={workdir}/logfile.log"])
