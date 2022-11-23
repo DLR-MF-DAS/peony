@@ -6,6 +6,7 @@ from joblib import Parallel, delayed
 from pypyr import pipelinerunner
 import logging
 import os
+import json
 
 def pipeline_on_polygon(workdir, pipeline, sqlite_path, polygon, date_range=None, n_jobs=1, verbose=False):
     if verbose:
