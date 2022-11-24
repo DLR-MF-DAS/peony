@@ -121,12 +121,4 @@ def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_
     coll = gd.MaskedCollection.from_name(collection)
     coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=cloudless_portion)
     comp_im = coll.composite(method=mosaic, region=polygon)
-    if project_name is not None:
-        import uuid
-        img_name = str(uuid.uuid4())
-        asset_id = f"projects/{project_name}/assets/{img_name}"
-        _ = comp_im.export(asset_id, type='asset', region=polygon, wait=True)
-        im = gd.MaskedImage.from_id(asset_id)
-        im.download(output_path)
-    else:
-        comp_im.download(output_path, region=polygon, crs='EPSG:32735', scale=10, max_tile_size=max_tile_size)
+    comp_im.download(output_path, region=polygon, crs='EPSG:32735', scale=10, max_tile_size=max_tile_size)
