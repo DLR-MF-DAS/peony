@@ -125,7 +125,6 @@ def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_
         import uuid
         img_name = str(uuid.uuid4())
         asset_id = f"projects/{project_name}/assets/{img_name}"
-        import pdb; pdb.set_trace()
         _ = comp_im.export(asset_id, type='asset', region=polygon, wait=True)
         im = gd.MaskedImage.from_id(asset_id)
         im.download(output_path)
