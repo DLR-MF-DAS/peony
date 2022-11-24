@@ -8,7 +8,7 @@ import click
 @click.option("-i", "--geojson", help="GeoJSON to download cloudless composite image for")
 @click.option("-o", "--output", help="Output file for the result")
 def main(geojson, output):
-    download_gee_composite(geojson, output, collection='COPERNICUS/S2_SR_HARMONIZED', mosaic='median', cloudless_portion=0.0)
+    download_gee_composite(geojson, output, collection='COPERNICUS/S2_SR_HARMONIZED', mosaic='median', cloudless_portion=0.6, max_tile_size=16)
 
 if __name__ == '__main__':
     main()
