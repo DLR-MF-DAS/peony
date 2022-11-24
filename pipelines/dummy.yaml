@@ -3,7 +3,10 @@ context_parser: pypyr.parser.keyvaluepairs
 steps:
   - name: pypyr.steps.echo
     in:
-      echoMe: "GeoJSON: {geojson}"
+      echoMe: "Path: {path}"
+  - name: pypyr.steps.echo
+    in:
+      echoMe: "Name: {name}"
   - name: pypyr.steps.echo
     in:
       echoMe: "Workdir: {workdir}"
