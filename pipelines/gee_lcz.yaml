@@ -1,13 +1,15 @@
 context_parser: pypyr.parser.keyvaluepairs
 steps:
-  - name: cmd
-    onError: 'gee download failed for {geojson} in {workdir}'
+  - name: peony.cmd
+    onError: 'gee download failed for {path} in {workdir}'
     in:
+      stepname: download
+      outputFile: '{workdir}/{name}.tif'
       cmd:
-        run: peony_gee_download -i {geojson} -o {geojson}.tif
+        run: peony_gee_download -i {path} -o {name}.tif
         cwd: '{workdir}'
-        stdout: '{workdir}/upsample.stdout.log'
-        stderr: '{workdir}/upsample.stderr.log'
+        stdout: '{workdir}/gee_download.stdout.log'
+        stderr: '{workdir}/gee_download.stderr.log'
 
 on_failure:
   - name: pypyr.steps.filewrite
