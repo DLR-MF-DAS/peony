@@ -79,13 +79,7 @@ def run_step(context: Context) -> None:
             fd.write(f"[{timestamp}] FAILED: removing lockfile {lockfile} because of an exception when running the command for {path} in {workdir}\n")
         os.remove(lockfile)
         return
-    finally:
+    if os.path.exists(outputfile) and os.path.exists(lockfile):
         with open(logfile, 'a') as fd:
             fd.write(f"[{timestamp}] FINISHED: step <<{stepname}>> successfully finished for {path}\n")
-        try:
-            if os.path.exists(outputfile):
-                with open(logfile, 'a') as fd:
-                    fd.write(f"[{timestamp}] INFO: removing lockfile {lockfile} because of successful completion of the command for {path}\n")
-                os.remove(lockfile)
-        except FileNotFoundError:
-            pass
+        os.remove(lockfile)
