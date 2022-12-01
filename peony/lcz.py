@@ -478,10 +478,10 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
 
     # initial classification map tiff file
     org_data = GDALHelper(input_file, readData=True, bands=[2, 3, 4, 5, 6, 7, 8, 9, 12, 13], scale=10000.0)
-    cityname = Path(input_file).stem
-    out_prob_tif = output_path + cityname + '_pro.tiff'
+    cityname = str(Path(input_file).stem)
+    out_prob_tif = os.path.join(output_path, cityname + '_pro.tiff')
     org_data.createEmptyFile(out_prob_tif, type=np.int16)
-    out_label_tif_mv = output_path + cityname + '_lab.tiff'
+    out_label_tif_mv = os.path.join(output_path, cityname + '_lab.tiff')
     org_data.createEmptyFile(out_label_tif_mv, type=np.byte)
     prob_pred_file = GDALHelper(out_prob_tif)
 
