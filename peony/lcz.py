@@ -447,12 +447,7 @@ class GDALHelper():
             number of LCZ classes
 
         """
-        if data.shape[0] != self.row * self.col:
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            print("ERROR:           number of patches does not suit the output size")
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            sys.exit(1)
-
+        assert data.shape[0] == self.row * self.col
         # convert float to int and transpose
         data = np.array(data*1e4)
         data = data.astype(np.int16)
