@@ -473,7 +473,7 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
         activation='softmax'
 
     # 3. loading trained model
-    model = resnet_v2.resnet_v2(input_shape=patch_shape, depth=20, num_classes=17, final_activation=activation)
+    model = resnet_v2(input_shape=patch_shape, depth=20, num_classes=17, final_activation=activation)
     model.load_weights(path2NetModel)
 
     # initial classification map tiff file
