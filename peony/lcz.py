@@ -477,7 +477,7 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
     model.load_weights(model_file)
 
     # initial classification map tiff file
-    org_data = GDALHelper(city, readData=True, bands=[2, 3, 4, 5, 6, 7, 8, 9, 12, 13], scale=10000.0)
+    org_data = GDALHelper(input_file, readData=True, bands=[2, 3, 4, 5, 6, 7, 8, 9, 12, 13], scale=10000.0)
     cityname = Path(input_file).stem
     out_prob_tif = output_path + cityname + '_pro.tiff'
     org_data.createEmptyFile(out_prob_tif, type=np.int16)
