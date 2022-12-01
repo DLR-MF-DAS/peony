@@ -452,7 +452,7 @@ class GDALHelper():
         self.writeOutput(filename, data)
 
 
-def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mixed=False, output_file_name=None):
+def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mixed=False):
     os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
     os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
     os.environ["TF_ENABLE_AUTO_MIXED_PRECISION"] = "1"
@@ -474,19 +474,16 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
 
     # 3. loading trained model
     model = resnet_v2(input_shape=patch_shape, depth=20, num_classes=17, final_activation=activation)
-    model.load_weights(path2NetModel)
+    model.load_weights(model_file)
 
     # initial classification map tiff file
-    orgData = GDALHelper(city, readData=True, bands=[2,3,4,5,6,7,8,9,12,13], scale=10000.0)
-    if output_file_name is None:
-        cityname = city.rpartition('/')[-1].rpartition('_')[0]
-    else:
-        cityname = output_file_name
-    outProbTif = outputPath + cityname + '_pro.tiff'
-    orgData.createEmptyFile(outProbTif, type=np.int16)
-    outLabelTif_mv = outputPath + cityname + '_lab.tiff'
-    orgData.createEmptyFile(outLabelTif_mv, type=np.byte)
-    probPredFile = GDALHelper(outProbTif)
+    org_data = GDALHelper(city, readData=True, bands=[2, 3, 4, 5, 6, 7, 8, 9, 12, 13], scale=10000.0)
+    cityname = Path(input_file).stem
+    out_prob_tif = output_path + cityname + '_pro.tiff'
+    org_data.createEmptyFile(out_prob_tif, type=np.int16)
+    out_label_tif_mv = output_path + cityname + '_lab.tiff'
+    org_data.createEmptyFile(out_label_tif_mv, type=np.byte)
+    prob_pred_file = GDALHelper(out_prob_tif)
 
     # get patch coordinate
     coordCell = probPredFile.getCoordLCZGrid()
