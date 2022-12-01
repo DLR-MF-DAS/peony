@@ -466,7 +466,7 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
     # batch size
     batch_size = 256
     # max number of patches to be generated at once
-    splitThresh=1e5
+    split_thresh=1e5
     if temperature != 1.0:
         activation=None
     else:
@@ -486,38 +486,36 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
     prob_pred_file = GDALHelper(out_prob_tif)
 
     # get patch coordinate
-    coordCell = probPredFile.getCoordLCZGrid()
-    coordImage = orgData.getImageCoordByXYCoord(coordCell)
+    coord_cell = prob_pred_file.getCoordLCZGrid()
+    coord_image = org_data.getImageCoordByXYCoord(coord_cell)
 
     # cutting patches
-    nSplit = np.ceil(coordImage.shape[0] / splitThresh)
-    probPred = []
-    for split in range(0,int(nSplit)):
-        coordImageBatch = coordImage[int(split*splitThresh):int((split+1)*splitThresh),:]
-        dataPatches = orgData.getPatch(coordImageBatch, patchsize)
+    n_split = int(np.ceil(coord_image.shape[0] / split_thresh))
+    prob_pred = []
+    for split in range(n_split):
+        coord_image_batch = coord_image[int(split * split_thresh):int((split + 1) * split_thresh),:]
+        data_patches = org_data.getPatch(coord_image_batch, patchsize)
         # predict label
-        pred = np.zeros((dataPatches.shape[0], 17))
-        if(len(dataPatches[[not (entry==0).all() for entry in dataPatches]]) > 0):
-            pred_tmp = model.predict(dataPatches[[not (entry==0).all() for entry in dataPatches]], batch_size=batch_size)
-            if(activation is None):
+        pred = np.zeros((data_patches.shape[0], 17))
+        if len(data_patches[[not (entry == 0).all() for entry in data_patches]]) > 0:
+            pred_tmp = model.predict(data_patches[[not (entry == 0).all() for entry in data_patches]], batch_size=batch_size)
+            if activation is None:
                 # Derive temperature scaled logits
                 pred_tmp = tf.math.divide(pred_tmp, temperature)
                 # Softmax transformation of scaled logits
                 pred_tmp = tf.nn.softmax(pred_tmp).numpy()
-            pred[[not (entry==0).all() for entry in dataPatches]] = pred_tmp
-
+            pred[[not (entry == 0).all() for entry in dataPatches]] = pred_tmp
         del dataPatches
-        probPred.append(pred)
-
-    probPred = np.concatenate(probPred, axis=0)
+        prob_pred.append(pred)
+    prob_pred = np.concatenate(prob_pred, axis=0)
 
     # 4. save predicted probability and label
-    probPredFile.writeProbData(outProbTif, probPred)
+    prob_pred_file.writeProbData(out_prob_tif, prob_pred)
 
-    labelPredFile = GDALHelper(outLabelTif_mv)
-    labelProb = np.reshape(probPred,(labelPredFile.row, labelPredFile.col, 17))
-    labelPred = labelProb.argmax(axis=2).astype(np.uint8) + 1
+    label_pred_file = GDALHelper(out_label_tif_mv)
+    label_prob = np.reshape(prob_pred,(label_pred_file.row, label_pred_file.col, 17))
+    label_pred = label_prob.argmax(axis=2).astype(np.uint8) + 1
     # set no_data value to LCZ class 0
-    labelPred[(labelProb==0).all(axis=2)] = 0
-    labelPredFile.writeOutput(outLabelTif_mv, np.expand_dims(labelPred, axis=0), lczColor=True, type=np.byte)
+    label_pred[(label_prob == 0).all(axis=2)] = 0
+    label_pred_file.writeOutput(out_label_tif_mv, np.expand_dims(label_pred, axis=0), lczColor=True, type=np.byte)
 
