@@ -14,9 +14,156 @@ import tensorflow as tf
 from tensorflow.keras import mixed_precision
 
 import sen2classify.model.resnet_v2 as resnet_v2
-from sen2classify.util.ioutil import createFileList
 from sen2classify.util.GDALHelper import GDALHelper
 
+from tensorflow import keras
+from tensorflow.keras.layers import Dense, Conv2D, BatchNormalization, Reshape, Activation, Permute, Lambda, Concatenate,GlobalAveragePooling2D
+from tensorflow.keras.layers import AveragePooling2D, Input, Flatten
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.callbacks import ModelCheckpoint, LearningRateScheduler
+from tensorflow.keras.callbacks import ReduceLROnPlateau
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.regularizers import l2
+from tensorflow.keras import backend as K
+from tensorflow.keras.models import Model
+
+def resnet_layer(inputs,
+                 num_filters=16,
+                 kernel_size=3,
+                 strides=1,
+                 activation='relu',
+                 batch_normalization=True,
+                 conv_first=True):
+    """2D Convolution-Batch Normalization-Activation stack builder
+    # Arguments
+        inputs (tensor): input tensor from input image or previous layer
+        num_filters (int): Conv2D number of filters
+        kernel_size (int): Conv2D square kernel dimensions
+        strides (int): Conv2D square stride dimensions
+        activation (string): activation name
+        batch_normalization (bool): whether to include batch normalization
+        conv_first (bool): conv-bn-activation (True) or
+            bn-activation-conv (False)
+    # Returns
+        x (tensor): tensor as input to the next layer
+    """
+    conv = Conv2D(num_filters,
+                  kernel_size=kernel_size,
+                  strides=strides,
+                  padding='same',
+                  kernel_initializer='he_normal',
+                  kernel_regularizer=l2(1e-4))
+
+    x = inputs
+    if conv_first:
+        x = conv(x)
+        if batch_normalization:
+            x = BatchNormalization()(x)
+        if activation is not None:
+            x = Activation(activation)(x)
+    else:
+        if batch_normalization:
+            x = BatchNormalization()(x)
+        if activation is not None:
+            x = Activation(activation)(x)
+        x = conv(x)
+    return x
+
+def resnet_v2(input_shape, depth, num_classes=10, final_activation='softmax'):
+    """ResNet Version 2 Model builder [b]
+    Stacks of (1 x 1)-(3 x 3)-(1 x 1) BN-ReLU-Conv2D or also known as
+    bottleneck layer
+    First shortcut connection per layer is 1 x 1 Conv2D.
+    Second and onwards shortcut connection is identity.
+    At the beginning of each stage, the feature map size is halved (downsampled)
+    by a convolutional layer with strides=2, while the number of filter maps is
+    doubled. Within each stage, the layers have the same number filters and the
+    same filter map sizes.
+    Features maps sizes:
+    conv1  : 32x32,  16
+    stage 0: 32x32,  64
+    stage 1: 16x16, 128
+    stage 2:  8x8,  256
+    # Arguments
+        input_shape (tensor): shape of input image tensor
+        depth (int): number of core convolutional layers
+        num_classes (int): number of classes (CIFAR10 has 10)
+        final_activation (str): activation applied to last dense layer: put 'softmax' or None
+                                'softmax' for probabilities and None for logits
+    # Returns
+        model (Model): Keras model instance
+    """
+    if (depth - 2) % 9 != 0:
+        raise ValueError('depth should be 9n+2 (eg 56 or 110 in [b])')
+    # Start model definition.
+    num_filters_in = 16
+    num_res_blocks = int((depth - 2) / 9)
+
+    inputs = Input(shape=input_shape)
+    # v2 performs Conv2D with BN-ReLU on input before splitting into 2 paths
+    x = resnet_layer(inputs=inputs,
+                     num_filters=num_filters_in,
+                     conv_first=True)
+
+    # Instantiate the stack of residual units
+    for stage in range(3):
+        for res_block in range(num_res_blocks):
+            activation = 'relu'
+            batch_normalization = True
+            strides = 1
+            if stage == 0:
+                num_filters_out = num_filters_in * 4
+                if res_block == 0:  # first layer and first stage
+                    activation = None
+                    batch_normalization = False
+            else:
+                num_filters_out = num_filters_in * 2
+                if res_block == 0:  # first layer but not first stage
+                    strides = 2    # downsample
+
+            # bottleneck residual unit
+            y = resnet_layer(inputs=x,
+                             num_filters=num_filters_in,
+                             kernel_size=1,
+                             strides=strides,
+                             activation=activation,
+                             batch_normalization=batch_normalization,
+                             conv_first=False)
+            y = resnet_layer(inputs=y,
+                             num_filters=num_filters_in,
+                             conv_first=False)
+            y = resnet_layer(inputs=y,
+                             num_filters=num_filters_out,
+                             kernel_size=1,
+                             conv_first=False)
+            if res_block == 0:
+                # linear projection residual shortcut connection to match
+                # changed dims
+                x = resnet_layer(inputs=x,
+                                 num_filters=num_filters_out,
+                                 kernel_size=1,
+                                 strides=strides,
+                                 activation=None,
+                                 batch_normalization=False)
+                
+            x = keras.layers.add([x, y])
+
+        num_filters_in = num_filters_out
+
+    # Add classifier on top.
+    # v2 has BN-ReLU before Pooling
+    x = BatchNormalization()(x)
+    x = Activation('relu')(x)
+    x = AveragePooling2D(pool_size=8)(x)
+    y = Flatten()(x)
+    outputs = Dense(num_classes,
+                    kernel_initializer='he_normal')(y)
+    if final_activation is not None:
+        outputs = Activation(final_activation, dtype='float32')(outputs)
+
+    # Instantiate model.
+    model = Model(inputs=inputs, outputs=outputs)
+    return model
 
 def writeGeoTiff(filename, data, proj, geoInfo, type=np.int16):
     """Write data to filename as GeoTiff.
@@ -317,7 +464,7 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
     os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
     os.environ['TF_CPP_MIN_LOG_LEVEL']='2'
     os.environ["TF_ENABLE_AUTO_MIXED_PRECISION"] = "1"
-    if(mixed):
+    if mixed:
         mixed_precision.set_global_policy('mixed_float16')
     # 1. parameter setting
     # patch size
@@ -328,80 +475,60 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
     batch_size = 256
     # max number of patches to be generated at once
     splitThresh=1e5
-    if(temperature != 1.0):
+    if temperature != 1.0:
         activation=None
     else:
         activation='softmax'
-    # 2. read data of a given folder
-    image2processed = createFileList(path2DataOfCity)
-    numImg = len(image2processed)
-    print("INFO:    Number of images: ", numImg)
-    print(numImg)
-
-    if numImg==0:
-        sys.exit("no images found!")
-
-    path2DataOfCity = path2DataOfCity.rsplit('/')[0]
 
     # 3. loading trained model
     model = resnet_v2.resnet_v2(input_shape=patch_shape, depth=20, num_classes=17, final_activation=activation)
     model.load_weights(path2NetModel)
 
+    # initial classification map tiff file
+    orgData = GDALHelper(city, readData=True, bands=[2,3,4,5,6,7,8,9,12,13], scale=10000.0)
+    if output_file_name is None:
+        cityname = city.rpartition('/')[-1].rpartition('_')[0]
+    else:
+        cityname = output_file_name
+    outProbTif = outputPath + cityname + '_pro.tiff'
+    orgData.createEmptyFile(outProbTif, type=np.int16)
+    outLabelTif_mv = outputPath + cityname + '_lab.tiff'
+    orgData.createEmptyFile(outLabelTif_mv, type=np.byte)
+    probPredFile = GDALHelper(outProbTif)
 
-    "process each city"
-    for city in image2processed:
-        print( (city + ' ' + str(image2processed.index(city)) + ' out of ' + str(len(image2processed)) ) )
+    # get patch coordinate
+    coordCell = probPredFile.getCoordLCZGrid()
+    coordImage = orgData.getImageCoordByXYCoord(coordCell)
 
-        # initial classification map tiff file
-        orgData = GDALHelper(city, readData=True, bands=[2,3,4,5,6,7,8,9,12,13], scale=10000.0)
-        if output_file_name is None:
-            cityname = city.rpartition('/')[-1].rpartition('_')[0]
-        else:
-            cityname = output_file_name
-        outProbTif = outputPath + cityname + '_pro.tiff'
-        orgData.createEmptyFile(outProbTif, type=np.int16)
-        outLabelTif_mv = outputPath + cityname + '_lab.tiff'
-        orgData.createEmptyFile(outLabelTif_mv, type=np.byte)
-        probPredFile = GDALHelper(outProbTif)
+    # cutting patches
+    nSplit = np.ceil(coordImage.shape[0] / splitThresh)
+    probPred = []
+    for split in range(0,int(nSplit)):
+        coordImageBatch = coordImage[int(split*splitThresh):int((split+1)*splitThresh),:]
+        dataPatches = orgData.getPatch(coordImageBatch, patchsize)
+        # predict label
+        pred = np.zeros((dataPatches.shape[0], 17))
+        if(len(dataPatches[[not (entry==0).all() for entry in dataPatches]]) > 0):
+            pred_tmp = model.predict(dataPatches[[not (entry==0).all() for entry in dataPatches]], batch_size=batch_size)
+            if(activation is None):
+                # Derive temperature scaled logits
+                pred_tmp = tf.math.divide(pred_tmp, temperature)
+                # Softmax transformation of scaled logits
+                pred_tmp = tf.nn.softmax(pred_tmp).numpy()
+            pred[[not (entry==0).all() for entry in dataPatches]] = pred_tmp
 
-        # get patch coordinate
-        coordCell = probPredFile.getCoordLCZGrid()
-        coordImage = orgData.getImageCoordByXYCoord(coordCell)
+        del dataPatches
+        probPred.append(pred)
 
-        # cutting patches
-        nSplit = np.ceil(coordImage.shape[0] / splitThresh)
-        probPred = []
-        for split in range(0,int(nSplit)):
-            print( ('Split ' + str(split) + ' out of ' + str(nSplit) ) )
+    probPred = np.concatenate(probPred, axis=0)
 
-            coordImageBatch = coordImage[int(split*splitThresh):int((split+1)*splitThresh),:]
+    # 4. save predicted probability and label
+    probPredFile.writeProbData(outProbTif, probPred)
 
-            dataPatches = orgData.getPatch(coordImageBatch, patchsize)
-
-            # predict label
-            pred = np.zeros((dataPatches.shape[0], 17))
-            if(len(dataPatches[[not (entry==0).all() for entry in dataPatches]]) > 0):
-                pred_tmp = model.predict(dataPatches[[not (entry==0).all() for entry in dataPatches]], batch_size=batch_size)
-                if(activation is None):
-                    # Derive temperature scaled logits
-                    pred_tmp = tf.math.divide(pred_tmp, temperature)
-                    # Softmax transformation of scaled logits
-                    pred_tmp = tf.nn.softmax(pred_tmp).numpy()
-                pred[[not (entry==0).all() for entry in dataPatches]] = pred_tmp
-
-            print('INFO:    Prediction finished.')
-            del dataPatches
-            probPred.append(pred)
-
-        probPred = np.concatenate(probPred, axis=0)
-
-        # 4. save predicted probability and label
-        probPredFile.writeProbData(outProbTif, probPred)
-
-        labelPredFile = GDALHelper(outLabelTif_mv)
-        labelProb = np.reshape(probPred,(labelPredFile.row, labelPredFile.col, 17))
-        labelPred = labelProb.argmax(axis=2).astype(np.uint8) + 1
-        # set no_data value to LCZ class 0
-        labelPred[(labelProb==0).all(axis=2)] = 0
-        labelPredFile.writeOutput(outLabelTif_mv, np.expand_dims(labelPred, axis=0), lczColor=True, type=np.byte)
+    labelPredFile = GDALHelper(outLabelTif_mv)
+    labelProb = np.reshape(probPred,(labelPredFile.row, labelPredFile.col, 17))
+    labelPred = labelProb.argmax(axis=2).astype(np.uint8) + 1
+    # set no_data value to LCZ class 0
+    labelPred[(labelProb==0).all(axis=2)] = 0
+    labelPredFile.writeOutput(outLabelTif_mv, np.expand_dims(labelPred, axis=0), lczColor=True, type=np.byte)
 
