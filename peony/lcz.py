@@ -13,9 +13,6 @@ gdal.UseExceptions()
 import tensorflow as tf
 from tensorflow.keras import mixed_precision
 
-import sen2classify.model.resnet_v2 as resnet_v2
-from sen2classify.util.GDALHelper import GDALHelper
-
 from tensorflow import keras
 from tensorflow.keras.layers import Dense, Conv2D, BatchNormalization, Reshape, Activation, Permute, Lambda, Concatenate,GlobalAveragePooling2D
 from tensorflow.keras.layers import AveragePooling2D, Input, Flatten
