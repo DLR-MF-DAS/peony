@@ -505,7 +505,7 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
                 # Softmax transformation of scaled logits
                 pred_tmp = tf.nn.softmax(pred_tmp).numpy()
             pred[[not (entry == 0).all() for entry in dataPatches]] = pred_tmp
-        del dataPatches
+        del data_patches
         prob_pred.append(pred)
     prob_pred = np.concatenate(prob_pred, axis=0)
 
