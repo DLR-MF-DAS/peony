@@ -121,6 +121,6 @@ def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_
     coll = gd.MaskedCollection.from_name(collection)
     coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=cloudless_portion)
     comp_im = coll.composite(method=mosaic, region=polygon)
-    comp_im.download(output_path, region=polygon, scale=10, max_tile_size=max_tile_size)
+    comp_im.download(output_path, region=polygon, crs="EPSG:4326", scale=10, max_tile_size=max_tile_size)
 
     
