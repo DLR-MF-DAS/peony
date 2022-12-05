@@ -10,6 +10,8 @@ import click
 @click.option("-o", "--output", help="Output file for the result")
 def main(geojson, output):
     tmp_file = output + '.tmp'
+    if os.path.exists(tmp_file):
+        os.remove(tmp_file)
     download_gee_composite(geojson, tmp_file, collection='COPERNICUS/S2_SR_HARMONIZED', mosaic='median', cloudless_portion=0.6, max_tile_size=16)
     os.rename(tmp_file, output)
 
