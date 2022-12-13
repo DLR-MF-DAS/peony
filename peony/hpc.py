@@ -51,9 +51,8 @@ def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180
         }
         subworkdir = os.path.join(workdir, f"{i}_{j}")
         os.makedirs(subworkdir, exist_ok=True)
-        fd, filename = tempfile.mkstemp('.json', dir=subworkdir, text=True)
-        fd = os.fdopen(fd, "w")
-        json.dump(rectangle, fd)
-        fd.close()
+        filename = os.path.join(subworkdir, f"{i}_{j}.json")
+        with open(filename, 'w') as fd:
+            json.dump(rectangle, fd)
         pipelinerunner.run(pipeline_name=pipeline, args_in=[f"name={i}_{j}", f"path={filename}", f"workdir={subworkdir}", f"logfile={workdir}/logfile.log"])
     Parallel(n_jobs=n_jobs)(delayed(run_pipeline)(i, j) for i, j in itertools.product(range(nx - 1), range(ny - 1)))
