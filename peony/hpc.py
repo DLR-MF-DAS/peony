@@ -88,7 +88,16 @@ def grid_progress(logfile):
     return success_matrix
 
 def draw_success_matrix(success_matrix):
-    for row in success_matrix:
+    for j, col in enumerate(success_matrix[0]):
+        numbers = f"{j:03d}"
+        for pos in range(3):
+            print('\t', end='')
+            for nr in numbers:
+                print("{}".format(nr[2 - pos]), end='')
+            print('\n', end='')
+        print('_', end='')
+    for i, row in enumerate(success_matrix):
+        print(f"{i}\t|", end='')
         for col in row:
             if col == 0:
                 print('.', end='')
