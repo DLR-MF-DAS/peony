@@ -86,3 +86,12 @@ def grid_progress(logfile):
         if patterns[i][j].search(finished) is not None:
             success_matrix[i][j] = 1
     return success_matrix
+
+def draw_success_matrix(success_matrix):
+    for row in success_matrix:
+        for col in row:
+            if col == 0:
+                print('.', end='')
+            else:
+                print('+', end='')
+        print('\n', end='')
