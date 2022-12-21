@@ -75,9 +75,9 @@ def grid_progress(logfile):
         for j in range(ny - 1):
             patterns[i][j] = re.compile(r'.*FINISHED:.*/{i}_{j}/.*'.format(i=i, j=j))
     with open(logfile, 'r') as fd:
-        for line in tqdm(list(fd.readlines())):
-            for i in range(nx - 1):
-                for j in range(ny - 1):
-                    if patterns[i][j].search(line) is not None:
-                        success_matrix[i][j] = 1
+        logfile_data = fd.read()
+    for i in range(nx - 1):
+        for j in range(ny - 1):
+            if patterns[i][j].search(logfile_data) is not None:
+                success_matrix[i][j] = 1
     return success_matrix
