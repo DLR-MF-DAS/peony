@@ -70,10 +70,14 @@ def grid_progress(logfile):
     nx = int((info["longitude_range"][1] - info["longitude_range"][0]) / info["grid_size"])
     ny = int((info["latitude_range"][1] - info["latitude_range"][0]) / info["grid_size"])
     success_matrix = np.zeros((nx - 1, ny - 1))
+    patterns = [[None for _ in range(ny - 1)] for _ in range(nx - 1)]
+    for i in range(nx - 1):
+        for j in range(ny - 1):
+            patterns[i][j] = re.compile(r'.*FINISHED:.*/{i}_{j}/.*'.format(i=i, j=j))
     with open(logfile, 'r') as fd:
         for line in tqdm(list(fd.readlines())):
             for i in range(nx - 1):
                 for j in range(ny - 1):
-                    if re.search(r'.*FINISHED:.*/{i}_{j}/.*'.format(i=i, j=j), line) is not None:
+                    if patterns[i][j].search(line) is not None:
                         success_matrix[i][j] = 1
     return success_matrix
