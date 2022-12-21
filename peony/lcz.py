@@ -467,10 +467,11 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
     batch_size = 256
     # max number of patches to be generated at once
     split_thresh=1e5
+
     if temperature != 1.0:
-        activation=None
+        activation = None
     else:
-        activation='softmax'
+        activation = 'softmax'
 
     # 3. loading trained model
     model = resnet_v2(input_shape=patch_shape, depth=20, num_classes=17, final_activation=activation)
