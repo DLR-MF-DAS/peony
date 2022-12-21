@@ -63,7 +63,7 @@ def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180
     Parallel(n_jobs=n_jobs)(delayed(run_pipeline)(i, j) for i, j in itertools.product(range(nx - 1), range(ny - 1)))
 
 def grid_progress(logfile):
-    from tdqm import tdqm
+    from tqdm import tqdm
     workdir = os.path.dirname(logfile)
     with open(os.path.join(workdir, 'info.json'), 'r') as fd:
         info = json.load(fd)
@@ -71,7 +71,7 @@ def grid_progress(logfile):
     ny = int((info["latitude_range"][1] - info["latitude_range"][0]) / info["grid_size"])
     success_matrix = np.zeros((nx - 1, ny - 1))
     with open(logfile, 'r') as fd:
-        for line in tdqm(list(fd.readlines())):
+        for line in tqdm(list(fd.readlines())):
             for i in range(nx - 1):
                 for j in range(ny - 1):
                     if line.startswith('FINISHED:'):
