@@ -56,7 +56,7 @@ def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180
             with open(filename, 'w') as fd:
                 json.dump(rectangle, fd)
         pipelinerunner.run(pipeline_name=pipeline, args_in=[f"name={i}_{j}", f"path={filename}", f"workdir={subworkdir}", f"logfile={workdir}/logfile.log"])
-    info = {'pipeline' : pipeline, 'grid_size' : grid_size, 'longitude_range' : list(longitude_range_, 'latitude_range' : list(latitude_range)}
+    info = {'pipeline' : pipeline, 'grid_size' : grid_size, 'longitude_range' : list(longitude_range), 'latitude_range' : list(latitude_range)}
     with open('info.json', 'w') as fd:
         json.dump(info, fd)
     Parallel(n_jobs=n_jobs)(delayed(run_pipeline)(i, j) for i, j in itertools.product(range(nx - 1), range(ny - 1)))
