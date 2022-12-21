@@ -79,7 +79,7 @@ def grid_progress(logfile):
         logfile_data = fd.readlines()
     finished = []
     for line in logfile_data:
-        if line.contains('FINISHED:'):
+        if 'FINISHED:' in line:
             finished.append(line)
     finished = reduce(lambda a, b: a + b, finished)
     for i, j in tqdm(list(itertools.product(range(nx - 1), range(ny - 1)))):
