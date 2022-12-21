@@ -97,7 +97,7 @@ def draw_success_matrix(success_matrix):
             print("{}".format(nr[2 - pos]), end='')
         print('\n', end='')
     for i, row in enumerate(success_matrix):
-        print("{i}\t", end='')
+        print(f"{i}\t", end='')
         for col in row:
             if col == 0:
                 print('.', end='')
