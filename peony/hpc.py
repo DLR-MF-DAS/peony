@@ -74,7 +74,6 @@ def grid_progress(logfile):
         for line in tqdm(list(fd.readlines())):
             for i in range(nx - 1):
                 for j in range(ny - 1):
-                    if line.startswith('FINISHED:'):
-                        if re.search(r'FINISHED:.*/{i}_{j}/.*'.format(i=i, j=j), line) is not None:
-                            success_matrix[i][j] = 1
+                    if re.search(r'.*FINISHED:.*/{i}_{j}/.*'.format(i=i, j=j), line) is not None:
+                        success_matrix[i][j] = 1
     return success_matrix
