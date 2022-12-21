@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from peony.lcz import inferenceData
+import click
+
+@click.command()
+@click.option("-i", "--input", help="Input GeoTIFF")
+@click.option("-m", "--model", help="LCZ inference model weights")
+@click.option("-o", "--output", help="Output folder")
+def main(input, model, output):
+    inferenceData(input, model, output)
+
+
+if __name__ == '__main__':
+    main()
