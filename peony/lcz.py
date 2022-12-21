@@ -350,7 +350,7 @@ class GDALHelper():
             Image patches for given coordinates.
         """
         # this function gets data patch with give image coordinate and patch size
-        halfPatchSize = np.int(np.floor(patchsize/2))
+        halfPatchSize = np.int16(np.floor(patchsize/2))
 
         outData = np.lib.pad(self.data,((0,0),(halfPatchSize,halfPatchSize),(halfPatchSize,halfPatchSize)),'symmetric')
         outData = np.transpose(outData,(1,2,0))
