@@ -103,7 +103,7 @@ def query_polygon(sqlite_path, geojson_path, date_range=None):
     for image in query:
         yield image
 
-def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_SR_HARMONIZED', mosaic='q-mosaic', cloudless_portion=0.6, max_tile_size=8, start_date="2019-09-01", end_date="2019-12-01", project_name=None):
+def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_SR_HARMONIZED', mosaic='q-mosaic', cloudless_portion=0.6, max_tile_size=8, start_date="2019-09-01", end_date="2019-12-01", project_name=None, new_algorithm=False):
     """Will download a (hopefully) cloud-free image of a specified region from GEE.
 
     Parameters
@@ -118,9 +118,18 @@ def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_
     with open(geojson_path, 'r') as fd:
         data = json.load(fd)
     polygon = data["features"][0]["geometry"]
-    coll = gd.MaskedCollection.from_name(collection)
-    coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=cloudless_portion)
-    comp_im = coll.composite(method=mosaic, region=polygon)
-    comp_im.download(output_path, region=polygon, crs="EPSG:4326", scale=10, max_tile_size=max_tile_size)
+    if new_algorithm:
+        coll = gd.MaskedCollection.from_name(collection)
+        coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=75, fill_portion=30, custom_filter='CLOUDY_PIXEL_PERCENTAGE<25', prob=40, buffer=100)
+        medoid_im = coll.composite('medoid', prob=40, buffer=100)
+        medoid_asset_id = f'projects/{project_name}/assets/s2_medoid_im'
+        medoid_task = medoid_im.export(medoid_asset_id, type='asset', region=polygon, crs='EPSG:4326', scale=10, dtype='uint16', wait=True)
+        medoid_asset_im = gd.MaskedImage.from_id(medoid_asset_id)
+        medoid_asset_im.download(output_path, overwrite=True)
+    else:
+        coll = gd.MaskedCollection.from_name(collection)
+        coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=cloudless_portion)
+        comp_im = coll.composite(method=mosaic, region=polygon)
+        comp_im.download(output_path, region=polygon, crs="EPSG:4326", scale=10, max_tile_size=max_tile_size)
 
     
