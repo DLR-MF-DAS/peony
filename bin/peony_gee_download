@@ -10,11 +10,11 @@ import click
 @click.option("-o", "--output", help="Output file for the result")
 @click.option("-p", "--project", help="Project name, only necessary for the new algorithm")
 @click.option("--new", is_flag=True)
-def main(geojson, output, new):
+def main(geojson, output, project, new):
     tmp_file = output + '.tmp'
     if os.path.exists(tmp_file):
         os.remove(tmp_file)
-    download_gee_composite(geojson, tmp_file, collection='COPERNICUS/S2_SR_HARMONIZED', mosaic='median', cloudless_portion=0.6, max_tile_size=16, project_name="ee-orbitfold", new_algorithm=new)
+    download_gee_composite(geojson, tmp_file, collection='COPERNICUS/S2_SR_HARMONIZED', mosaic='median', cloudless_portion=0.6, max_tile_size=16, project_name=project, new_algorithm=new)
     os.rename(tmp_file, output)
 
 if __name__ == '__main__':
