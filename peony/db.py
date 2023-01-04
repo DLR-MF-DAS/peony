@@ -12,6 +12,7 @@ import pathlib
 import json
 from os.path import exists
 import os
+import ee
 
 Base = declarative_base()
 
@@ -127,7 +128,7 @@ def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_
         medoid_asset_id = f'projects/{project_name}/assets/s2_medoid_{basename}'
         medoid_task = medoid_im.export(medoid_asset_id, type='asset', region=polygon, crs='EPSG:4326', scale=10, dtype='uint16', wait=True)
         medoid_asset_im = gd.MaskedImage.from_id(medoid_asset_id)
-        medoid_asset_im.download(output_path, region=polygon, overwrite=True)
+        medoid_asset_im.download(output_path, region=polygon, scale=10, overwrite=True)
     else:
         coll = gd.MaskedCollection.from_name(collection)
         coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=cloudless_portion)
