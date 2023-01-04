@@ -120,7 +120,7 @@ def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_
     with open(geojson_path, 'r') as fd:
         data = json.load(fd)
     polygon = data["features"][0]["geometry"]
-    basename = os.path.basename(geojson_path)
+    basename = os.path.splitext(os.path.basename(geojson_path))[0]
     if new_algorithm:
         coll = gd.MaskedCollection.from_name(collection)
         coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=75, fill_portion=30, custom_filter='CLOUDY_PIXEL_PERCENTAGE<25', prob=40, buffer=100)
