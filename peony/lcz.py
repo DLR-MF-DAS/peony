@@ -458,14 +458,9 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
     os.environ["TF_ENABLE_AUTO_MIXED_PRECISION"] = "1"
     if mixed:
         mixed_precision.set_global_policy('mixed_float16')
-    # 1. parameter setting
-    # patch size
     patchsize = 32
-    # patch shape
     patch_shape = (patchsize, patchsize, 10)
-    # batch size
     batch_size = 256
-    # max number of patches to be generated at once
     split_thresh=1e5
 
     if temperature != 1.0:
@@ -494,6 +489,7 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
     n_split = int(np.ceil(coord_image.shape[0] / split_thresh))
     prob_pred = []
     for split in range(n_split):
+        print( ('Split ' + str(split) + ' out of ' + str(n_split) ) )
         coord_image_batch = coord_image[int(split * split_thresh):int((split + 1) * split_thresh),:]
         data_patches = org_data.getPatch(coord_image_batch, patchsize)
         # predict label
