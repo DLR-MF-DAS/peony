@@ -475,9 +475,9 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
     # initial classification map tiff file
     org_data = GDALHelper(input_file, readData=True, bands=[2, 3, 4, 5, 6, 7, 8, 9, 12, 13], scale=10000.0)
     cityname = str(Path(input_file).stem)
-    out_prob_tif = os.path.join(output_path, cityname + '_pro.tiff')
+    out_prob_tif = os.path.join(output_path, cityname + '_pro.tif.tmp')
     org_data.createEmptyFile(out_prob_tif, type=np.int16)
-    out_label_tif_mv = os.path.join(output_path, cityname + '_lab.tiff')
+    out_label_tif_mv = os.path.join(output_path, cityname + '_lab.tif.tmp')
     org_data.createEmptyFile(out_label_tif_mv, type=np.byte)
     prob_pred_file = GDALHelper(out_prob_tif)
 
@@ -516,3 +516,5 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
     label_pred[(label_prob == 0).all(axis=2)] = 0
     label_pred_file.writeOutput(out_label_tif_mv, np.expand_dims(label_pred, axis=0), lczColor=True, type=np.byte)
 
+    os.rename(out_prob_tif, '.'.join(out_prob_tif.split('.')[:-1]))
+    os.rename(out_label_tif_mv, '.'.join(out_label_tif_mv.split('.')[:-1]))

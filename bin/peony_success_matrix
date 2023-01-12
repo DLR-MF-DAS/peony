@@ -6,8 +6,9 @@ import click
 
 @click.command()
 @click.option("-i", "--logfile", help="Path to the logfile")
-def main(logfile):
-    success = grid_progress(logfile)
+@click.option("-s", "--step", help="Step name")
+def main(logfile, step):
+    success = grid_progress(logfile, step)
     draw_success_matrix(success)
 
 if __name__ == '__main__':

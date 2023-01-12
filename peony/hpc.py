@@ -62,7 +62,7 @@ def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180
         json.dump(info, fd)
     Parallel(n_jobs=n_jobs)(delayed(run_pipeline)(i, j) for i, j in itertools.product(range(nx - 1), range(ny - 1)))
 
-def grid_progress(logfile):
+def grid_progress(logfile, step):
     from tqdm import tqdm
     from functools import reduce
     workdir = os.path.dirname(logfile)
@@ -74,7 +74,7 @@ def grid_progress(logfile):
     patterns = [[None for _ in range(ny - 1)] for _ in range(nx - 1)]
     for i in range(nx - 1):
         for j in range(ny - 1):
-            patterns[i][j] = re.compile(r'.*FINISHED:.*/{i}_{j}/.*'.format(i=i, j=j))
+            patterns[i][j] = re.compile(r'.*FINISHED:.*<<{step}>>.*/{i}_{j}/.*'.format(i=i, j=j, step=step))
     with open(logfile, 'r') as fd:
         logfile_data = fd.readlines()
     finished = []

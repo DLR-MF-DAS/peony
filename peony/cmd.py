@@ -72,11 +72,11 @@ def run_step(context: Context) -> None:
     try:
         open(lockfile, 'a').close()
         with open(logfile, 'a') as fd:
-            fd.write(f"[{timestamp}] STARTED: step <<{stepname}>> started for {path}\n")
+            fd.write(f"[{timestamp}] STARTED: step <<{stepname}>> started for {path} in {workdir}\n")
         pypyr.steps.cmd.run_step(context)
     except:
         with open(logfile, 'a') as fd:
-            fd.write(f"[{timestamp}] FAILED: removing lockfile {lockfile} because of an exception when running the command for {path} in {workdir}\n")
+            fd.write(f"[{timestamp}] FAILED: step <<{stepname}>> failed for {path} in {workdir}\n")
         os.remove(lockfile)
         return
     if os.path.exists(outputfile) and os.path.exists(lockfile):
