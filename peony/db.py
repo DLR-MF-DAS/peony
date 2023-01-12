@@ -13,6 +13,7 @@ import json
 from os.path import exists
 import os
 import ee
+import pyproj
 
 Base = declarative_base()
 
@@ -122,13 +123,22 @@ def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_
     polygon = data["features"][0]["geometry"]
     basename = os.path.splitext(os.path.basename(geojson_path))[0]
     if new_algorithm:
+        utm_code = pyproj.database.query_utm_crs_info(
+            datum_name = 'WGS 84',
+            area_of_interest = pyproj.aoi.AreaOfInterest(
+                west_lon_degree  = polygon["coordinates"][0][0][0],
+                south_lat_degree = polygon["coordinates"][0][0][1],
+                east_lon_degree  = polygon["coordinates"][0][2][0],
+                north_lat_degree = polygon["coordinates"][0][2][1],
+            ),
+        )[0].code
         coll = gd.MaskedCollection.from_name(collection)
         coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=75, fill_portion=30, custom_filter='CLOUDY_PIXEL_PERCENTAGE<25', prob=40, buffer=100)
         medoid_im = coll.composite('medoid', prob=40, buffer=100)
         medoid_asset_id = f'projects/{project_name}/assets/s2_medoid_{basename}'
-        medoid_task = medoid_im.export(medoid_asset_id, type='asset', region=polygon, crs='EPSG:4326', scale=10, dtype='uint16', wait=True)
+        medoid_task = medoid_im.export(medoid_asset_id, type='asset', region=polygon, crs=f"EPSG:{utm_code}", scale=10, dtype='uint16', wait=True)
         medoid_asset_im = gd.MaskedImage.from_id(medoid_asset_id)
-        medoid_asset_im.download(output_path, region=polygon, scale=10, overwrite=True)
+        medoid_asset_im.download(output_path, crs=f"EPSG:{utm_code}", scale=10, overwrite=True)
         ee.data.deleteAsset(medoid_asset_id)
     else:
         coll = gd.MaskedCollection.from_name(collection)
