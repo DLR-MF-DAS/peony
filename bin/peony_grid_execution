@@ -1,14 +1,23 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from peony.hpc import grid_progress, draw_success_matrix
+from peony.hpc import pipeline_on_uniform_grid
+import os
 import click
 
 @click.command()
-@click.option("-i", "--logfile", help="Path to the logfile")
-def main(logfile):
-    success = grid_progress(logfile)
-    draw_success_matrix(success)
+@click.option("-p", "--pipeline", help="Pipeline name")
+@click.option("-w", "--workdir", help="Workdir")
+@click.option("-g", "--grid-size", help="Length of the grid cell side in degrees", default=0.5)
+@click.option("--lon-start", help="Initial longitude of the rectangle of interest")
+@click.option("--lon-end", help="Final longitude of the rectangle of interest")
+@click.option("--lat-start", help="Initial latitude of the rectangle of interest")
+@click.option("--lat-end", help="Final latitude of the rectangle of interest")
+@click.option("-l", "--logfile", help="Logfile")
+@click.option("-n", "--n-jobs", help="Number of parallel jobs", default=1)
+@click.option("-o", "--overlap", help="Size of the overlap relative in terms of percentage", default=0.0)
+def main(pipeline, workdir, grid_size, lon_start, lon_end, lat_start, lat_end, logfile, n_jobs, overlap):
+    pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(lon_start, lon_end), latitude_range=(lat_start, lat_end), n_jobs=n_jobs, overlap_percentage=overlap)
 
 if __name__ == '__main__':
     main()
