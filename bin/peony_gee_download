@@ -9,7 +9,7 @@ import click
 @click.option("-i", "--geojson", help="GeoJSON to download cloudless composite image for")
 @click.option("-o", "--output", help="Output file for the result")
 @click.option("-p", "--project", help="Project name, only necessary for the new algorithm")
-@click.option("-c", "--cloudless", help="Portion of the image that needs to be cloudless to be selected")
+@click.option("-c", "--cloudless", help="Portion of the image that needs to be cloudless to be selected", default=0.6)
 @click.option("--start-date", help="Starting date for the image time series", default="2019-09-01")
 @click.option("--end-date", help="Ending date for the image time series", default="2019-12-01")
 @click.option("--new", is_flag=True)
