@@ -6,7 +6,7 @@ steps:
       stepname: download
       outputFile: '{workdir}/{name}.tif'
       cmd:
-        run: peony_gee_download -i {path} -o {name}.tif -p ee-orbitfold --start-date="2022-01-01" --end-date="2022-12-31" --new
+        run: peony_gee_download -i {path} -o {name}.tif -p ee-orbitfold --cloudless=0.25 --start-date="2022-01-01" --end-date="2022-12-31" --new
         cwd: '{workdir}'
         stdout: '{workdir}/gee_download.stdout.log'
         stderr: '{workdir}/gee_download.stderr.log'
