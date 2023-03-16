@@ -15,7 +15,7 @@ steps:
     onError: 'lcz inference failed for {path} in {workdir}'
     in:
       stepname: inference
-      outputFile: '{workdir}/{name}_lab.tiff'
+      outputFile: '{workdir}/{name}_lab.tif'
       inputFiles:
         - '{workdir}/{name}.tif'
       cmd:
