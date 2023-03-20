@@ -61,6 +61,7 @@ def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180
     with open('info.json', 'w') as fd:
         json.dump(info, fd)
     Parallel(n_jobs=n_jobs)(delayed(run_pipeline)(i, j) for i, j in itertools.product(range(nx - 1), range(ny - 1)))
+    return list(itertools.product(range(nx - 1), range(ny - 1)))
 
 def grid_progress(logfile, step):
     from tqdm import tqdm
