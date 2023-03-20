@@ -3,6 +3,8 @@
 
 import click
 import json
+import subprocess
+import pathlib
 from peony.hpc import pipeline_on_uniform_grid
 
 @click.command()
@@ -10,6 +12,7 @@ from peony.hpc import pipeline_on_uniform_grid
 @click.option('-p', '--pipeline', help='Pipeline to run on the specified area')
 @click.option('-w', '--workdir', help='Working directory to use for intermediate results')
 def main(geojson, pipeline, workdir):
+    geojson_name = pathlib.Path(geojson).stem
     with open(geojson, 'r') as fd:
         data = json.load(fd)
     polygon = data['features'][0]['geometry']['coordinates'][0]
@@ -17,7 +20,11 @@ def main(geojson, pipeline, workdir):
     lon_end = max(p[0] for p in polygon)
     lat_start = min(p[1] for p in polygon)
     lat_end = max(p[1] for p in polygon)
-    pipeline_on_uniform_grid(workdir, pipeline, 0.25, longitude_range=(lon_start, lon_end), latitude_range=(lat_start, lat_end), n_jobs=1, overlap_percentage=0)
+    indices = pipeline_on_uniform_grid(workdir, pipeline, 0.25, longitude_range=(lon_start, lon_end), latitude_range=(lat_start, lat_end), n_jobs=1, overlap_percentage=0)
+    label_names = " ".join(["{i}_{j}_lab.tif" for i, j in indices])
+    sat_names = " ".join(["{i}_{j}.tif" for i, j in indices])
+    subprocess.run(["gdalwarp", "-cutline", geojson, "-crop_to_cutline", "-co", "compress=lzw", "-overwrite"] + [label_names] + [geojson_name + "_lab.tif"])
+    subprocess.run(["gdalwarp", "-cutline", geojson, "-crop_to_cutline", "-co", "compress=lzw", "-overwrite"] + [sat_names] + [geojson_name + ".tif"])
 
 if __name__ == '__main__':
     main()
