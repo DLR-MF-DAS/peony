@@ -17,7 +17,7 @@ def main(geojson, output, project, cloudless, start_date, end_date, new):
     tmp_file = output + '.tmp'
     if os.path.exists(tmp_file):
         os.remove(tmp_file)
-    download_gee_composite(geojson, tmp_file, collection='COPERNICUS/S2_SR_HARMONIZED', mosaic='median', cloudless_portion=cloudless, max_tile_size=16, project_name=project, new_algorithm=new, start_date=start_date, end_date=end_date)
+    download_gee_composite(geojson, tmp_file, collection='COPERNICUS/S2_HARMONIZED', mosaic='median', cloudless_portion=cloudless, max_tile_size=16, project_name=project, new_algorithm=new, start_date=start_date, end_date=end_date)
     os.rename(tmp_file, output)
 
 if __name__ == '__main__':
