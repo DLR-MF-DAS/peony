@@ -23,8 +23,10 @@ def main(geojson, pipeline, workdir):
     lat_end = max(p[1] for p in polygon)
     indices = pipeline_on_uniform_grid(workdir, pipeline, 0.25, longitude_range=(lon_start, lon_end), latitude_range=(lat_start, lat_end), n_jobs=1, overlap_percentage=0)
     label_names = [os.path.join(workdir, f"{i}_{j}", f"{i}_{j}_lab.tif") for i, j in indices]
+    pro_names = [os.path.join(workdir, f"{i}_{j}", f"{i}_{j}_pro.tif") for i, j in indices]
     sat_names = [os.path.join(workdir, f"{i}_{j}", f"{i}_{j}.tif") for i, j in indices]
     subprocess.run(["gdalwarp", "-cutline", geojson, "-crop_to_cutline", "-co", "compress=lzw", "-overwrite"] + label_names + [geojson_name + "_lab.tif"])
+    subprocess.run(["gdalwarp", "-cutline", geojson, "-crop_to_cutline", "-co", "compress=lzw", "-overwrite"] + pro_names + [geojson_name + "_pro.tif"])
     subprocess.run(["gdalwarp", "-cutline", geojson, "-crop_to_cutline", "-co", "compress=lzw", "-overwrite"] + sat_names + [geojson_name + ".tif"])
 
 if __name__ == '__main__':
