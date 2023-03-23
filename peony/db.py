@@ -132,9 +132,9 @@ def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_
                 north_lat_degree = polygon["coordinates"][0][2][1],
             ),
         )[0].code
-            coll = gd.MaskedCollection.from_name(collection)
-            coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=75, fill_portion=30, custom_filter='CLOUDY_PIXEL_PERCENTAGE<25', prob=40, buffer=100)
-            medoid_im = coll.composite('medoid', prob=40, buffer=100)
+        coll = gd.MaskedCollection.from_name(collection)
+        coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=75, fill_portion=30, custom_filter='CLOUDY_PIXEL_PERCENTAGE<25', prob=40, buffer=100)
+        medoid_im = coll.composite('medoid', prob=40, buffer=100)
         try:
             medoid_asset_id = f'projects/{project_name}/assets/s2_medoid_{basename}'
             medoid_task = medoid_im.export(medoid_asset_id, type='asset', region=polygon, crs=f"EPSG:{utm_code}", scale=10, dtype='uint16', wait=True)
