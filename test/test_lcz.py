@@ -20,4 +20,4 @@ def test_inference(tmp_path):
     with rasterio.open(os.path.join(tmp_path, "0_0_pro.tif")) as src:
         pro = src.read()
     assert np.all(lab_ref == lab)
-    #assert np.all(pro_ref == pro)
+    assert np.array_equal(pro_ref, pro)
