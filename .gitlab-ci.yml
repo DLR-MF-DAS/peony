@@ -44,15 +44,15 @@ lint-test-job:   # This job also runs in the test stage.
     - sleep 10
     - echo "No lint issues found."
 
-deploy-job:      # This job runs in the deploy stage.
-  variables:
-    DOCKERHUB_USER: $DOCKERHUB_USER
-    DOCKERHUB_PASS: $DOCKERHUB_PASS
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
-  script:
-    - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get --yes install sudo wget ca-certificates curl gnupg lsb-release build-essential
-    - wget https://github.com/hpc/charliecloud/releases/download/v0.28/charliecloud-0.28.tar.gz && tar -xvzf charliecloud-0.28.tar.gz && cd charliecloud-0.28 && ./configure && make && make install && cd ..
-    - mkdir -p /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-    - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get --yes install docker-ce docker-ce-cli containerd.io docker-compose-plugin
-    - cp docker/Dependencies ./Dockerfile && docker build -t peony_deps:latest -f Dockerfile . && docker tag peony_deps:latest $DOCKERHUB_USER/peony_deps:latest && docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS && docker push $DOCKERHUB_USER/peony_deps:latest
+#deploy-job:      # This job runs in the deploy stage.
+#  variables:
+#    DOCKERHUB_USER: $DOCKERHUB_USER
+#    DOCKERHUB_PASS: $DOCKERHUB_PASS
+#  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+#  script:
+#    - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get --yes install sudo wget ca-certificates curl gnupg lsb-release build-essential
+#    - wget https://github.com/hpc/charliecloud/releases/download/v0.28/charliecloud-0.28.tar.gz && tar -xvzf charliecloud-0.28.tar.gz && cd charliecloud-0.28 && ./configure && make && make install && cd ..
+#    - mkdir -p /etc/apt/keyrings && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+#    - apt-get update && DEBIAN_FRONTEND=noninteractive apt-get --yes install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+#    - cp docker/Dependencies ./Dockerfile && docker build -t peony_deps:latest -f Dockerfile . && docker tag peony_deps:latest $DOCKERHUB_USER/peony_deps:latest && docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS && docker push $DOCKERHUB_USER/peony_deps:latest
 #    - cp docker/Dockerfile ./Dockerfile && docker build -t peony:latest -f Dockerfile . && docker tag peony:latest $DOCKERHUB_USER/peony:latest && docker login -u $DOCKERHUB_USER -p $DOCKERHUB_PASS && docker push $DOCKERHUB_USER/peony:latest
