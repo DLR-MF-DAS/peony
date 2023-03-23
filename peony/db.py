@@ -34,7 +34,7 @@ def load_spatialite(dbapi_conn, connection_record):
 
 def init_spatial_metadata(engine):
     conn = engine.connect()
-    conn.execute(select([func.InitSpatialMetaData()]))
+    conn.execute(select(func.InitSpatialMetaData()))
     conn.close()
 
 def csv_2_spatialite(csv_path, sqlite_path):
