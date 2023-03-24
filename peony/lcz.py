@@ -249,38 +249,29 @@ class GDALHelper():
             Image to be processed.
     """
     def __init__(self, filename, readData=False, bands=None, scale=1):
-        try:
-            fid = gdal.Open(filename)
-            self.row = fid.RasterYSize
-            self.col = fid.RasterXSize
-            self.bnd = fid.RasterCount
-            self.proj = fid.GetProjection()
-            self.geoInfo = fid.GetGeoTransform()
-            if readData is True:
-                if bands is None:
-                    print('Missing band selection in GDALHelper. Please specify bands.')
-                for ind, band in enumerate(bands):
-                    srcband = fid.GetRasterBand(band)
+        fid = gdal.Open(filename)
+        self.row = fid.RasterYSize
+        self.col = fid.RasterXSize
+        self.bnd = fid.RasterCount
+        self.proj = fid.GetProjection()
+        self.geoInfo = fid.GetGeoTransform()
+        if readData is True:
+            if bands is None:
+                print('Missing band selection in GDALHelper. Please specify bands.')
+            for ind, band in enumerate(bands):
+                srcband = fid.GetRasterBand(band)
 
-                    if srcband is None:
-                        print('srcband is None' + str(band) + filename)
-                        continue
-                    arr = srcband.ReadAsArray()
+                if srcband is None:
+                    print('srcband is None' + str(band) + filename)
+                    continue
+                arr = srcband.ReadAsArray()
 
-                    if ind==0:
-                        R = arr.shape[0]
-                        C = arr.shape[1]
-                        self.data = np.zeros((len(bands), R, C), dtype=np.float32)
+                if ind==0:
+                    R = arr.shape[0]
+                    C = arr.shape[1]
+                    self.data = np.zeros((len(bands), R, C), dtype=np.float32)
 
-                    self.data[ind,:,:]=np.float32(arr)/scale
-
-        except RuntimeError as e:
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            print("ERROR:           the given data geotiff can not be open by GDAL")
-            print("DIRECTORY:       " + filename)
-            print("GDAL EXCEPCTION: " + e)
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            sys.exit(1)
+                self.data[ind,:,:]=np.float32(arr)/scale
 
     def getCoordLCZGrid(self):
         """this function gets the coordinate of every cell for the LCZ classification map.
