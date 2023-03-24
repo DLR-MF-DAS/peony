@@ -187,19 +187,18 @@ def writeGeoTiff(filename, data, proj, geoInfo, type=np.int16):
     col = data.shape[2]
 
     GDALDriver = gdal.GetDriverByName('GTiff')
-    File = GDALDriver.Create(filename, col, row, bnd,
-                    gdal_array.NumericTypeCodeToGDALTypeCode(type))
-    File.SetProjection(proj)
-    File.SetGeoTransform(geoInfo)
+    geotiff_file = GDALDriver.Create(filename, col, row, bnd, gdal_array.NumericTypeCodeToGDALTypeCode(type))
+    geotiff_file.SetProjection(proj)
+    geotiff_file.SetGeoTransform(geoInfo)
 
     # save file with int zeros
-    idBnd = np.arange(0, bnd, dtype=int)
-    for idxBnd in idBnd:
-        outBand = File.GetRasterBand(int(idxBnd+1))
-        outBand.WriteArray(data[idxBnd,:,:].astype(type))
-        outBand.FlushCache()
-        del(outBand)
-    File = None
+    band_ids = np.arange(0, bnd, dtype=int)
+    for id_ in band_ids:
+        out_band = geotiff_file.GetRasterBand(int(id_ + 1))
+        out_band.WriteArray(data[id_, :, :].astype(type))
+        out_band.FlushCache()
+        del(out_band)
+    geotiff_file = None
 
 
 def applyLCZColors(band):
