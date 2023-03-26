@@ -19,7 +19,7 @@ steps:
       inputFiles:
         - '{workdir}/{name}.tif'
       cmd:
-        run: peony_lcz_inference -i {workdir}/{name}.tif -o {workdir} -m /peony/test/s2_lcz_weights.hdf5
+        run: peony_lcz_inference -i {workdir}/{name}.tif -o {workdir} -m /peony/data/s2_lcz_weights.hdf5
         cwd: '{workdir}'
         stdout: '{workdir}/lcz_inference.stdout.log'
         stderr: '{workdir}/lcz_inference.stderr.log'
