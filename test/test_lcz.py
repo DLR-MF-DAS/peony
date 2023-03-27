@@ -8,7 +8,7 @@ import rasterio
 from peony.lcz import inferenceData
 
 def test_inference(tmp_path):
-    inferenceData("test/0_0.tif", "test/s2_lcz_weights.hdf5", tmp_path)
+    inferenceData("test/0_0.tif", "data/s2_lcz_weights.hdf5", tmp_path)
     with rasterio.open("test/0_0_lab_ref.tif") as src:
         lab_ref = src.read()
     with rasterio.open("test/0_0_pro_ref.tif") as src:
