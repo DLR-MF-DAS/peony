@@ -1,0 +1,18 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import click
+
+@click.command()
+@click.option('-g', '--geojson')
+@click.option('-o', '--output')
+@click.option('-c', '--collection')
+def main(geojson, output, collection):
+    import geedim as gd
+    coll = gd.MaskedCollection.from_name(collection)
+    coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=cloudless_portion)
+    comp_im = coll.composite(method=mosaic, region=polygon)
+    comp_im.download(output_path, region=polygon, crs="EPSG:4326", scale=10, max_tile_size=max_tile_size)
+
+if __name__ == '__main__':
+    pass
