@@ -106,6 +106,15 @@ def query_polygon(sqlite_path, geojson_path, date_range=None):
     for image in query:
         yield image
 
+def download_gee_image(geojson_path, output_path, image, max_tile_size=8):
+    import geedim as gd
+    gd.Initialize()
+    with open(geojson_path, 'r') as fd:
+        data = json.load(fd)
+    polygon = data["features"][0]["geometry"]
+    im = gd.MaskedImage.from_id(image, mask=False)
+    im.download(os.path.join(output_path, Path(geojson_path).stem + ".tif"), region=polygon, max_tile_size=max_tile_size)
+
 def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_HARMONIZED', mosaic='q-mosaic', cloudless_portion=0.6, max_tile_size=8, start_date="2019-09-01", end_date="2019-12-01", project_name=None, new_algorithm=False):
     """Will download a (hopefully) cloud-free image of a specified region from GEE.
 
