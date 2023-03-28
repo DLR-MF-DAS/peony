@@ -112,8 +112,17 @@ def download_gee_image(geojson_path, output_path, image, max_tile_size=8):
     with open(geojson_path, 'r') as fd:
         data = json.load(fd)
     polygon = data["features"][0]["geometry"]
+    utm_code = pyproj.database.query_utm_crs_info(
+        datum_name = 'WGS 84',
+        area_of_interest = pyproj.aoi.AreaOfInterest(
+            west_lon_degree  = polygon["coordinates"][0][0][0],
+            south_lat_degree = polygon["coordinates"][0][0][1],
+            east_lon_degree  = polygon["coordinates"][0][2][0],
+            north_lat_degree = polygon["coordinates"][0][2][1],
+        ),
+    )[0].code
     im = gd.MaskedImage.from_id(image, mask=False)
-    im.download(output_path, region=polygon, max_tile_size=max_tile_size)
+    im.download(output_path, region=polygon, crs=f"EPSG:{utm_code}", max_tile_size=max_tile_size)
 
 def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_HARMONIZED', mosaic='q-mosaic', cloudless_portion=0.6, max_tile_size=8, start_date="2019-09-01", end_date="2019-12-01", project_name=None, new_algorithm=False):
     """Will download a (hopefully) cloud-free image of a specified region from GEE.
