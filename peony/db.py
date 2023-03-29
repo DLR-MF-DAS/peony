@@ -14,6 +14,7 @@ from os.path import exists
 import os
 import ee
 import pyproj
+import uuid
 
 Base = declarative_base()
 
@@ -153,8 +154,9 @@ def download_gee_composite(geojson_path, output_path, collection='COPERNICUS/S2_
         coll = gd.MaskedCollection.from_name(collection)
         coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=75, fill_portion=30, custom_filter='CLOUDY_PIXEL_PERCENTAGE<25', prob=40, buffer=100)
         medoid_im = coll.composite('medoid', prob=40, buffer=100)
+        unique_id = str(uuid.uuid4())
         try:
-            medoid_asset_id = f'projects/{project_name}/assets/s2_medoid_{basename}'
+            medoid_asset_id = f'projects/{project_name}/assets/s2_medoid_{basename}_{unique_id}'
             medoid_task = medoid_im.export(medoid_asset_id, type='asset', region=polygon, crs=f"EPSG:{utm_code}", scale=10, dtype='uint16', wait=True)
             medoid_asset_im = gd.MaskedImage.from_id(medoid_asset_id)
             medoid_asset_im.download(output_path, crs=f"EPSG:{utm_code}", scale=10, overwrite=True)
