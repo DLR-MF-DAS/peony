@@ -1,4 +1,4 @@
-context_parser: pypyr.parser.list
+context_parser: pypyr.parser.keyvaluepairs
 steps:
     - name: pypyr.steps.cmd
       in:
