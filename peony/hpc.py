@@ -33,8 +33,8 @@ def pipeline_on_polygon(workdir, pipeline, sqlite_path, polygon, date_range=None
 def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180, 180), latitude_range=(-90, 90), n_jobs=1, overlap_percentage=0.0):
     assert(longitude_range[0] < longitude_range[1])
     assert(latitude_range[0] < latitude_range[1])
-    nx = int((longitude_range[1] - longitude_range[0]) / grid_size) + 1
-    ny = int((latitude_range[1] - latitude_range[0]) / grid_size) + 1
+    nx = np.ceil((longitude_range[1] - longitude_range[0]) / grid_size) + 1
+    ny = np.ceil((latitude_range[1] - latitude_range[0]) / grid_size) + 1
     xs = np.linspace(longitude_range[0], longitude_range[1], nx)
     ys = np.linspace(latitude_range[0], latitude_range[1], ny)
     overlap = (overlap_percentage * grid_size) * 0.5
@@ -69,8 +69,8 @@ def grid_progress(logfile, step):
     workdir = os.path.dirname(logfile)
     with open(os.path.join(workdir, 'info.json'), 'r') as fd:
         info = json.load(fd)
-    nx = int((info["longitude_range"][1] - info["longitude_range"][0]) / info["grid_size"]) + 1
-    ny = int((info["latitude_range"][1] - info["latitude_range"][0]) / info["grid_size"]) + 1
+    nx = np.ceil((info["longitude_range"][1] - info["longitude_range"][0]) / info["grid_size"]) + 1
+    ny = np.ceil((info["latitude_range"][1] - info["latitude_range"][0]) / info["grid_size"]) + 1
     success_matrix = np.zeros((nx - 1, ny - 1))
     patterns = [[None for _ in range(ny - 1)] for _ in range(nx - 1)]
     for i in range(nx - 1):
