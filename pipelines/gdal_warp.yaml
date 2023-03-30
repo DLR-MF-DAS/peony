@@ -1,0 +1,8 @@
+context_parser: pypyr.parser.list
+steps:
+    - name: pypyr.steps.cmd
+      in:
+          cmd:  gdalwarp -cutline {geojson} -crop_to_cutline -co compress=lzw -overwrite {lab_names} {geojson_name}_lab.tif
+    - name: pypyr.steps.cmd
+      in:
+          cmd: gdalwarp -cutline {geojson} -crop_to_cutline -co compress=lzw -overwire {pro_names} {geojson_name}_pro.tif
