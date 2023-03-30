@@ -13,6 +13,7 @@ from peony.hpc import pipeline_on_uniform_grid
 @click.option('-p', '--pipeline', help='Pipeline to run on the specified area')
 @click.option('-w', '--workdir', help='Working directory to use for intermediate results')
 @click.option('-t', '--tile-size', help='Size of the tiles used when processing', default=0.25)
+@click.option('-r', '--post-pipeline', help='Post processing pipeline')
 def main(geojson, pipeline, workdir, tile_size):
     geojson_name = pathlib.Path(geojson).stem
     with open(geojson, 'r') as fd:
