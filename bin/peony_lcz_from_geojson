@@ -28,7 +28,9 @@ def main(geojson, pipeline, workdir, tile_size, post_pipeline):
     indices = pipeline_on_uniform_grid(workdir, pipeline, tile_size, longitude_range=(lon_start, lon_end), latitude_range=(lat_start, lat_end), n_jobs=1, overlap_percentage=0)
     lab_names = " ".join([os.path.join(workdir, f"{i}_{j}", f"{i}_{j}_lab.tif") for i, j in indices])
     pro_names = " ".join([os.path.join(workdir, f"{i}_{j}", f"{i}_{j}_pro.tif") for i, j in indices])
-    pipelinerunner.run(post_pipeline, dict_in={'geojson': geojson, 'geojson_name': geojson_name, 'lab_names': lab_names, 'pro_names': pro_names})
+    lab_filename = os.path.join(workdir, geojson + "_lab.tif")
+    pro_filename = os.path.join(workdir, geojson + "_pro.tif")
+    pipelinerunner.run(post_pipeline, dict_in={'geojson': geojson, 'geojson_name': geojson_name, 'lab_names': lab_names, 'pro_names': pro_names, 'lab_filename': lab_filename, 'pro_filename': pro_filename})
 
 if __name__ == '__main__':
     main()

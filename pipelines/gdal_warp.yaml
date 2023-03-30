@@ -2,7 +2,7 @@ context_parser: pypyr.parser.keyvaluepairs
 steps:
     - name: pypyr.steps.cmd
       in:
-          cmd:  gdalwarp -cutline {geojson} -crop_to_cutline -co compress=lzw -overwrite {lab_names} {geojson_name}_lab.tif
+          cmd:  gdalwarp -cutline {geojson} -crop_to_cutline -co compress=lzw -overwrite {lab_names} {lab_filename}
     - name: pypyr.steps.cmd
       in:
-          cmd: gdalwarp -cutline {geojson} -crop_to_cutline -co compress=lzw -overwrite {pro_names} {geojson_name}_pro.tif
+          cmd: gdalwarp -cutline {geojson} -crop_to_cutline -co compress=lzw -overwrite {pro_names} {pro_filename}
