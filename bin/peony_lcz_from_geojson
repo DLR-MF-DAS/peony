@@ -15,7 +15,7 @@ from pypyr import pipelinerunner
 @click.option('-p', '--pipeline', help='Pipeline to run on the specified area')
 @click.option('-w', '--workdir', help='Working directory to use for intermediate results')
 @click.option('-t', '--tile-size', help='Size of the tiles used when processing', default=0.25)
-@click.option('-r', '--post-pipeline', help='Post processing pipeline, takes the following arguments: geojson, geojson_name, lab_names, pro_names')
+@click.option('-r', '--post-pipeline', help='Post processing pipeline, takes the following arguments: geojson, geojson_name, lab_names, pro_names', 'lab_filename', 'pro_filename')
 def main(geojson, pipeline, workdir, tile_size, post_pipeline):
     geojson_name = pathlib.Path(geojson).stem
     with open(geojson, 'r') as fd:
