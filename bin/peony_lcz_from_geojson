@@ -7,6 +7,7 @@ import subprocess
 import pathlib
 import os
 from peony.hpc import pipeline_on_uniform_grid
+from pypyr import pipelinerunner
 
 
 @click.command()
@@ -14,7 +15,7 @@ from peony.hpc import pipeline_on_uniform_grid
 @click.option('-p', '--pipeline', help='Pipeline to run on the specified area')
 @click.option('-w', '--workdir', help='Working directory to use for intermediate results')
 @click.option('-t', '--tile-size', help='Size of the tiles used when processing', default=0.25)
-@click.option('-r', '--post-pipeline', help='Post processing pipeline')
+@click.option('-r', '--post-pipeline', help='Post processing pipeline, takes the following arguments: geojson, geojson_name, lab_names, pro_names')
 def main(geojson, pipeline, workdir, tile_size, post_pipeline):
     geojson_name = pathlib.Path(geojson).stem
     with open(geojson, 'r') as fd:
@@ -25,12 +26,9 @@ def main(geojson, pipeline, workdir, tile_size, post_pipeline):
     lat_start = min(p[1] for p in polygon)
     lat_end = max(p[1] for p in polygon)
     indices = pipeline_on_uniform_grid(workdir, pipeline, tile_size, longitude_range=(lon_start, lon_end), latitude_range=(lat_start, lat_end), n_jobs=1, overlap_percentage=0)
-    label_names = [os.path.join(workdir, f"{i}_{j}", f"{i}_{j}_lab.tif") for i, j in indices]
-    pro_names = [os.path.join(workdir, f"{i}_{j}", f"{i}_{j}_pro.tif") for i, j in indices]
-    sat_names = [os.path.join(workdir, f"{i}_{j}", f"{i}_{j}.tif") for i, j in indices]
-    subprocess.run(["gdalwarp", "-cutline", geojson, "-crop_to_cutline", "-co", "compress=lzw", "-overwrite"] + label_names + [geojson_name + "_lab.tif"])
-    subprocess.run(["gdalwarp", "-cutline", geojson, "-crop_to_cutline", "-co", "compress=lzw", "-overwrite"] + pro_names + [geojson_name + "_pro.tif"])
-    subprocess.run(["gdalwarp", "-cutline", geojson, "-crop_to_cutline", "-co", "compress=lzw", "-overwrite"] + sat_names + [geojson_name + ".tif"])
+    lab_names = " ".join([os.path.join(workdir, f"{i}_{j}", f"{i}_{j}_lab.tif") for i, j in indices])
+    pro_names = " ".join([os.path.join(workdir, f"{i}_{j}", f"{i}_{j}_pro.tif") for i, j in indices])
+    pipelinerunner.run(post_pipeline, dict_in={'geojson': geojson, 'geojson_name': geojson_name, 'lab_names': lab_names, 'pro_names': pro_names})
 
 if __name__ == '__main__':
     main()
