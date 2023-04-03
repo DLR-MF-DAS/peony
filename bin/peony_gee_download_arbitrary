@@ -10,6 +10,7 @@ import click
 @click.option('-s', '--scale', default=10)
 def main(geojson, output, collection, scale):
     import geedim as gd
+    gd.Initialize()
     coll = gd.MaskedCollection.from_name(collection)
     coll = coll.search(region=polygon)
     comp_im = coll.composite(region=polygon)
