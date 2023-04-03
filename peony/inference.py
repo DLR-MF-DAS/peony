@@ -17,7 +17,7 @@ def bayesian_inference(hypothesis, evidence, likelihood):
     """
     return likelihood(evidence) * hypothesis
 
-def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path, likelihood=lambda x: x):
+def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path, likelihood=lambda x, y: x):
     with rasterio.open(hypothesis_path) as h_src:
         hypothesis = h_src.read()
         with rasterio.open(evidence_path) as e_src:
@@ -27,6 +27,6 @@ def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path
             e_transform = e_src.transform * e_src.transform.scale(e_src.width / evidence.shape[-1], e_src.height / evidence.shape[-2])
             profile = e_src.profile
             profile['transform'] = e_transform
-    posterior = likelihood(evidence) * hypothesis
+    posterior = likelihood(evidence, hypothesis) * hypothesis
     with rasterio.open(posterior_path, 'w', **profile) as dst:
         dst.write(posterior)
