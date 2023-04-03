@@ -25,8 +25,8 @@ def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path
                 out_shape=(e_src.count, h_src.height, h_src.width),
                 resampling=Resampling.nearest)
             e_transform = e_src.transform * e_src.transform.scale(e_src.width / evidence.shape[-1], e_src.height / evidence.shape[-2])
-            e_src.transform = e_transform
             profile = e_src.profile
+            profile['transform'] = e_transform
     posterior = likelihood(evidence) * hypothesis
     with rasterio.open(posterior_path, 'w', **profile) as dst:
         dst.write(posterior)
