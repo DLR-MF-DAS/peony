@@ -15,4 +15,4 @@ def main(geojson, output, collection):
     comp_im.download(output, region=polygon, crs="EPSG:4326", scale=10, max_tile_size=16)
 
 if __name__ == '__main__':
-    pass
+    main()
