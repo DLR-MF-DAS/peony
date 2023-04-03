@@ -11,6 +11,9 @@ import click
 def main(geojson, output, collection, scale):
     import geedim as gd
     gd.Initialize()
+    with open(geojson, 'r') as fd:
+        data = json.load(fd)
+    polygon = data["features"][0]["geometry"]
     coll = gd.MaskedCollection.from_name(collection)
     coll = coll.search(region=polygon)
     comp_im = coll.composite(region=polygon)
