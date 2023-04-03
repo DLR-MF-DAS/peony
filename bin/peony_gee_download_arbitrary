@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import click
+import json
 
 @click.command()
 @click.option('-g', '--geojson')
