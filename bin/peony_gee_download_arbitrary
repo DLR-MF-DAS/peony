@@ -7,12 +7,13 @@ import click
 @click.option('-g', '--geojson')
 @click.option('-o', '--output')
 @click.option('-c', '--collection')
-def main(geojson, output, collection):
+@click.option('-s', '--scale', default=10)
+def main(geojson, output, collection, scale):
     import geedim as gd
     coll = gd.MaskedCollection.from_name(collection)
     coll = coll.search(region=polygon)
     comp_im = coll.composite(region=polygon)
-    comp_im.download(output, region=polygon, crs="EPSG:4326", scale=10, max_tile_size=16)
+    comp_im.download(output, region=polygon, crs="EPSG:4326", scale=scale, max_tile_size=16)
 
 if __name__ == '__main__':
     main()
