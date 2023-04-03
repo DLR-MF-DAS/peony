@@ -10,9 +10,9 @@ import click
 def main(geojson, output, collection):
     import geedim as gd
     coll = gd.MaskedCollection.from_name(collection)
-    coll = coll.search(start_date=start_date, end_date=end_date, region=polygon, cloudless_portion=cloudless_portion)
-    comp_im = coll.composite(method=mosaic, region=polygon)
-    comp_im.download(output_path, region=polygon, crs="EPSG:4326", scale=10, max_tile_size=max_tile_size)
+    coll = coll.search(region=polygon)
+    comp_im = coll.composite(region=polygon)
+    comp_im.download(output, region=polygon, crs="EPSG:4326", scale=10, max_tile_size=16)
 
 if __name__ == '__main__':
     pass
