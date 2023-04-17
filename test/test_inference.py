@@ -56,4 +56,4 @@ def esa_world_cover_to_lcz_likelihood(esa_wc, lcz):
     return likelihood
 
 def test_bayesian_inference(tmp_path):
-    bayesian_inference_on_geotiff("test/Lumberton_ROI_pro.tif", "test/Lumberton_ROI_ESA_WorldCover.tif", tmp_path, esa_world_cover_to_lcz_likelihood)
+    bayesian_inference_on_geotiff("test/Lumberton_ROI_pro.tif", "test/Lumberton_ROI_ESA_WorldCover.tif", os.path.join(tmp_path, 'test.tif'), esa_world_cover_to_lcz_likelihood)
