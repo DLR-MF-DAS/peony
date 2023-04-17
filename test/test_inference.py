@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from peony.inference import bayesian_inference_on_geotiff
+import rasterio
 
 # ESA WorldCover classes
 # ----------------------
@@ -58,3 +59,6 @@ def esa_world_cover_to_lcz_likelihood(esa_wc, lcz):
 
 def test_bayesian_inference(tmp_path):
     bayesian_inference_on_geotiff("test/Lumberton_ROI_pro.tif", "test/Lumberton_ROI_ESA_WorldCover.tif", os.path.join(tmp_path, 'test.tif'), esa_world_cover_to_lcz_likelihood)
+    with rasterio.open(os.path.join(tmp_path, 'test.tif')) as src:
+        data = src.read()
+    assert(np.all(data.sum(axis=0) == 10000))
