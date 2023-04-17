@@ -38,6 +38,7 @@ from peony.inference import bayesian_inference_on_geotiff
 def esa_world_cover_to_lcz_likelihood(esa_wc, lcz):
     likelihood = np.zeros(lcz.shape)
     likelihood = np.swapaxes(likelihood, 0, 2)
+    likelihood = np.swapaxes(likelihood, 0, 1)
     esa_wc = esa_wc[0]
     likelihood[np.argwhere(esa_wc == 10)] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1])
     likelihood[np.argwhere(esa_wc == 20)] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5, 0.9, 0.5, 0.1, 0.1, 0.1])
@@ -50,6 +51,7 @@ def esa_world_cover_to_lcz_likelihood(esa_wc, lcz):
     likelihood[np.argwhere(esa_wc == 90)] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
     likelihood[np.argwhere(esa_wc == 95)] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
     likelihood[np.argwhere(esa_wc == 100)] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
+    likelihood = np.swapaxes(likelihood, 0, 1)
     likelihood = np.swapaxes(likelihood, 0, 2)
     return likelihood
 
