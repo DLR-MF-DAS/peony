@@ -1,3 +1,4 @@
+import os
 import numpy as np
 from peony.inference import bayesian_inference_on_geotiff
 
