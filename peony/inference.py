@@ -1,5 +1,6 @@
 import rasterio
 from rasterio.enums import Resampling
+import numpy as np
 
 def bayesian_inference(hypothesis, evidence, likelihood):
     """Apply Bayesian inference given a hypothesis (prior) and evidence (transformed into likelihood).
