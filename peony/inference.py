@@ -2,22 +2,6 @@ import rasterio
 from rasterio.enums import Resampling
 import numpy as np
 
-def bayesian_inference(hypothesis, evidence, likelihood):
-    """Apply Bayesian inference given a hypothesis (prior) and evidence (transformed into likelihood).
-
-    Parameters
-    ----------
-    hypothesis: NumPy array
-    evidence: NumPy array
-    likelihood: function
-    
-    Returns
-    -------
-    NumPy array
-        an array with the posterior distribution.
-    """
-    return likelihood(evidence) * hypothesis
-
 def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path, likelihood=lambda x, y: x, prob_scale=10000):
     with rasterio.open(hypothesis_path) as h_src:
         hypothesis = h_src.read()
