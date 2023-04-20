@@ -26,7 +26,7 @@ def probability_to_classes(pro_geotiff, lab_geotiff):
     """
     with rasterio.open(pro_geotiff) as src:
         pro = src.read()
-        profile = pro.profile
+        profile = src.profile
     lab = np.argmax(pro, axis=0)
     profile['count'] = 1
     with rasterio.open(lab_geotiff, 'w', **profile) as dst:
