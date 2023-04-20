@@ -1,4 +1,5 @@
 import json
+import rasterio
 from geoalchemy2 import WKTElement
 
 def geojson_to_wktelement(jsonfile, to_srs='epsg:3857'):
@@ -23,4 +24,10 @@ def probability_to_classes(pro_geotiff, lab_geotiff):
     """Reads a geotiff with probability distribution and write a corresponding label file.
     Using max likelihood.
     """
-    pass
+    with rasterio.open(pro_geotiff) as src:
+        pro = src.read()
+        profile = pro.profile
+    lab = np.argmax(pro, axis=0)
+    profile['count'] = 1
+    with rasterio.open(lab_geotiff, 'w', **profile) as dst:
+        dst.write(lab)
