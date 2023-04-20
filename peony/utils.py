@@ -1,5 +1,6 @@
 import json
 import rasterio
+import numpy as np
 from geoalchemy2 import WKTElement
 
 def geojson_to_wktelement(jsonfile, to_srs='epsg:3857'):
