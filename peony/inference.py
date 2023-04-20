@@ -29,5 +29,6 @@ def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path
     posterior = likelihood(evidence, hypothesis) * hypothesis
     posterior = posterior / posterior.sum(axis=0).astype(float)
     posterior = np.rint(posterior * prob_scale).astype(int)
+    posterior = np.clip(posterior, 0, prob_scale)
     with rasterio.open(posterior_path, 'w', **profile) as dst:
         dst.write(posterior)
