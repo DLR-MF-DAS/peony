@@ -17,7 +17,7 @@ steps:
         stepname: esa_wc_download
         outputFile: '{workdir}/{name}_esa_wc.tif'
         cmd:
-            run: peony_download_arbitrary -g {path} -o {name}_esa_wc.tif -c "ESA/WorldCover/v100"
+            run: peony_gee_download_arbitrary -g {path} -o {name}_esa_wc.tif -c "ESA/WorldCover/v100"
             cwd: '{workdir}'
             stdout: '{workdir}/esa_wc_download.stdout.log'
             stderr: '{workdir}/esa_wc_download.stderr.log'
