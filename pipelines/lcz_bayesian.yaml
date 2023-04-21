@@ -1,0 +1,45 @@
+context_parser: pypyr.parser.keyvaluepairs
+steps:
+  - name: peony.cmd
+    onError: 'gee download failed for {path} in {workdir}'
+    in:
+      stepname: download
+      outputFile: '{workdir}/{name}.tif'
+      cmd:
+        run: peony_gee_download -i {path} -o {name}.tif -p ee-orbitfold --new
+        cwd: '{workdir}'
+        stdout: '{workdir}/gee_download.stdout.log'
+        stderr: '{workdir}/gee_download.stderr.log'
+
+  - name: peony.cmd
+    onError: 'esa wc download failed for {path} in {workdir}'
+    in:
+        stepname: esa_wc_download
+        outputFile: '{workdir}/{name}_esa_wc.tif'
+        cmd:
+            run: peony_download_arbitrary -g {path} -o {name}_esa_wc.tif -c "ESA/WorldCover/v100"
+            cwd: '{workdir}'
+            stdout: '{workdir}/esa_wc_download.stdout.log'
+            stderr: '{workdir}/esa_wc_download.stderr.log'
+
+  - name: peony.cmd
+    onError: 'lcz inference failed for {path} in {workdir}'
+    in:
+      stepname: inference
+      outputFile: '{workdir}/{name}_lab.tif'
+      inputFiles:
+        - '{workdir}/{name}.tif'
+      cmd:
+        run: peony_lcz_inference -i {workdir}/{name}.tif -o {workdir} -m /peony/data/s2_lcz_weights.hdf5
+        cwd: '{workdir}'
+        stdout: '{workdir}/lcz_inference.stdout.log'
+        stderr: '{workdir}/lcz_inference.stderr.log'
+
+on_failure:
+  - name: pypyr.steps.filewrite
+    in:
+      fileWrite:
+        path: '{logfile}'
+        payload: "FAILURE: {runErrors[0][customError]}\n"
+        append: True
+
