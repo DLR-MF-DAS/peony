@@ -1,15 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from peony.lcz import inferenceData
+from peony.inference import bayesian_inference_on_geotiff
 import click
 
 @click.command()
-@click.option("-i", "--input", help="Input GeoTIFF")
-@click.option("-m", "--model", help="LCZ inference model weights")
-@click.option("-o", "--output", help="Output folder")
-def main(input, model, output):
-    inferenceData(input, model, output)
+@click.option("-h", "--hypothesis", help="Path to the GeoTIFF with the hypothesis probability distribution")
+@click.option("-e", "--evidence", help="Path to the evidence data")
+@click.option("-p", "--posterior", help="Name of the file to write the posterior distribution")
+@click.option("-l", "--likelihood", help="YAML with the likelihood transformation")
+def main(hypothesis, evidence, posterior, likelihood):
+    bayesian_inference_on_geotiff(hypothesis, evidence, posterior)
 
 
 if __name__ == '__main__':
