@@ -31,4 +31,4 @@ def probability_to_classes(pro_geotiff, lab_geotiff):
     lab = np.argmax(pro, axis=0)
     profile.update(dtype=rasterio.uint8, count=1, compress='lzw')
     with rasterio.open(lab_geotiff, 'w', **profile) as dst:
-        dst.write(lab)
+        dst.write(lab, 1)
