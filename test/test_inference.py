@@ -2,6 +2,7 @@ import os
 import numpy as np
 from peony.inference import bayesian_inference_on_geotiff
 from peony.utils import probability_to_classes
+import subprocess
 import rasterio
 
 # ESA WorldCover classes
@@ -70,3 +71,6 @@ def test_bayesian_inference(tmp_path):
     with rasterio.open('test/Lumberton_ROI_lab.tif') as src:
         lab_data = src.read()
     assert((lab_test_data == lab_data).all())
+
+def test_script(tmp_path):
+    subprocess.run(['peony_bayesian_inference', '-h', 'test/Lumberton_ROI_pro.tif', '-e', 'test/Lumberton_ROI_ESA_WorldCover', '-p', os.path.join(tmp_path, 'test.tif'), '-l', 'test/esa_wc_likelihood.json'])
