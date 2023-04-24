@@ -35,6 +35,32 @@ steps:
         stdout: '{workdir}/lcz_inference.stdout.log'
         stderr: '{workdir}/lcz_inference.stderr.log'
 
+  - name: peony.cmd
+    onError: 'bayesian inference failed for {path} in {workdir}'
+    in:
+      stepname: bayesian
+      outputFile: '{workdir}/{name}_b_pro.tif'
+      inputFiles: 
+        - '{workdir}/{name}_pro.tif'
+      cmd:
+        run: peony_bayesian_inference -h {workdir}/{name}_pro.tif -e {workdir}/{name}_esa_wc.tif -p {workdir}/{name}_b_pro.tif -l /peony/test/esa_wc_likelihood.json
+        cwd: '{workdir}'
+        stdout: '{workdir}/bayesian.stdout.log'
+        stderr: '{workdir}/bayesian.stderr.log'
+
+  - name: peony.cmd
+    onError: 'probability to label conversion failed for {path} in {workdir}'
+    in:
+      stepname: pro_to_lab
+      outputFile: '{workdir}/{name}_b_lab.tif'
+      inputFiles:
+        - '{workdir}/{name}_b_pro.tif'
+      cmd:
+        run: peony_pro_to_lab -i {workdir}/{name}_b_pro.tif -o {workdir}/{name}_b_lab.tif
+        cwd: '{workdir}'
+        stdout: '{workdir}/pro_to_lab.stdout.log'
+        stderr: '{workdir}/pro_to_lab.stderr.log'
+
 on_failure:
   - name: pypyr.steps.filewrite
     in:
