@@ -73,4 +73,5 @@ def test_bayesian_inference(tmp_path):
     assert((lab_test_data == lab_data).all())
 
 def test_script(tmp_path):
-    subprocess.run(['peony_bayesian_inference', '-h', 'test/Lumberton_ROI_pro.tif', '-e', 'test/Lumberton_ROI_ESA_WorldCover', '-p', os.path.join(tmp_path, 'test.tif'), '-l', 'test/esa_wc_likelihood.json'])
+    subprocess.run(['peony_bayesian_inference', '-h', 'test/Lumberton_ROI_pro.tif', '-e', 'test/Lumberton_ROI_ESA_WorldCover', '-p', os.path.join(tmp_path, 'test_pro.tif'), '-l', 'test/esa_wc_likelihood.json'])
+    subprocess.run(['peony_pro_to_lab', '-i', os.path.join(tmp_path, 'test_pro.tif'), '-o', os.path.join(tmp_path, 'test_lab.tif')])

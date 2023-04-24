@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+from peony.utils import probability_to_classes
+import click
+
+@click.command()
+@click.option("-i", "--input", help="Probability GeoTIFF")
+@click.option("-o", "--output", help="Output GeoTIFF")
+def main(input, output):
+    probability_to_classes(input, output)
+
+
+if __name__ == '__main__':
+    main()
