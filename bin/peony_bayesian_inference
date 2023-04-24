@@ -3,6 +3,20 @@
 
 from peony.inference import bayesian_inference_on_geotiff
 import click
+import json
+
+def json_to_likelihood(data):
+    def likelihood_function(evidence, hypothesis):
+        likelihood = np.zeros(hypothesis.shape)
+        likelihood = np.swapaxes(likelihood, 0, 2)
+        likelihood = np.swapaxes(likelihood, 0, 1)
+        evidence = evidence[0]
+        for key in data:
+            likelihood[np.argwhere(evidence == int(key))] = np.array(data[key])
+        likelihood = np.swapaxes(likelihood, 0, 1)
+        likelihood = np.swapaxes(likelihood, 0, 2)
+        return likelihood
+    return likelihood_function
 
 @click.command()
 @click.option("-h", "--hypothesis", help="Path to the GeoTIFF with the hypothesis probability distribution")
@@ -10,7 +24,9 @@ import click
 @click.option("-p", "--posterior", help="Name of the file to write the posterior distribution")
 @click.option("-l", "--likelihood", help="YAML with the likelihood transformation")
 def main(hypothesis, evidence, posterior, likelihood):
-    bayesian_inference_on_geotiff(hypothesis, evidence, posterior)
+    with open(likelihood, 'r') as fd:
+        likelihood_data = json.load(fd)
+    bayesian_inference_on_geotiff(hypothesis, evidence, posterior, json_to_likelihood(likelihood_data))
 
 
 if __name__ == '__main__':
