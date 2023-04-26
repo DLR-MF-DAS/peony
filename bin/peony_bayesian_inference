@@ -4,6 +4,7 @@
 from peony.inference import bayesian_inference_on_geotiff
 import click
 import json
+import numpy as np
 
 def json_to_likelihood(data):
     def likelihood_function(evidence, hypothesis):
