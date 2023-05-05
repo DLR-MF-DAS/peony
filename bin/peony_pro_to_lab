@@ -7,8 +7,9 @@ import click
 @click.command()
 @click.option("-i", "--input", help="Probability GeoTIFF")
 @click.option("-o", "--output", help="Output GeoTIFF")
-def main(input, output):
-    probability_to_classes(input, output)
+@click.option("-c", "--colormap", help="Colormap description", default=None)
+def main(input, output, colormap):
+    probability_to_classes(input, output, colormap=colormap)
 
 
 if __name__ == '__main__':
