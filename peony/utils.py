@@ -21,7 +21,7 @@ def geojson_to_wktelement(jsonfile, to_srs='epsg:3857'):
     polygon = ", ".join([f"{point[1]} {point[0]}" for point in coordinates])
     return WKTElement(f"Polygon(({polygon}))")
 
-def probability_to_classes(pro_geotiff, lab_geotiff, index_to_label=lambda x: x + 1):
+def probability_to_classes(pro_geotiff, lab_geotiff, index_to_label=lambda x: x + 1, colormap=None):
     """Reads a geotiff with probability distribution and write a corresponding label file.
     Using max likelihood.
     """
@@ -32,3 +32,8 @@ def probability_to_classes(pro_geotiff, lab_geotiff, index_to_label=lambda x: x 
     profile.update(dtype=rasterio.uint8, count=1, compress='lzw')
     with rasterio.open(lab_geotiff, 'w', **profile) as dst:
         dst.write(lab, 1)
+        if colormap is not None:
+            with open(colormap, 'r') as fd:
+                cmap = json.load(fd)
+                cmap = {int(k): v for k, v in cmap.items()}
+            dst.write_colormap(1, cmap)
