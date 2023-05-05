@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import click
+import subprocess
+
+@click.command()
+@click.option('-g', '--geojson')
+@click.option('-o', '--output')
+@click.option('-i', '--input')
+def main(geojson, output, input):
+    subprocess.run(["gdalwarp", "-cutline", geojson, "-crop_to_cutline", "-of", "GTiff", "-overwrite", input, output])
+
+if __name__ == '__main__':
+    main()
