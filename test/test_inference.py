@@ -64,8 +64,8 @@ def test_bayesian_inference(tmp_path):
     with rasterio.open(os.path.join(tmp_path, 'test.tif')) as src:
         data = src.read()
     assert(np.isclose(data.sum(axis=0), 10000, rtol=0, atol=5).all())
-    probability_to_classes(os.path.join(tmp_path, 'test.tif'), os.path.join(tmp_path, 'test_lab.tif'))
-    probability_to_classes('test/Lumberton_ROI_pro.tif', os.path.join(tmp_path, 'test_ref_lab.tif'))
+    probability_to_classes(os.path.join(tmp_path, 'test.tif'), os.path.join(tmp_path, 'test_lab.tif'), colormap='data/lcz_colormap.json')
+    probability_to_classes('test/Lumberton_ROI_pro.tif', os.path.join(tmp_path, 'test_ref_lab.tif'), colormap='data/lcz_colormap.json')
     with rasterio.open(os.path.join(tmp_path, 'test_ref_lab.tif')) as src:
         lab_test_data = src.read()
     with rasterio.open('test/Lumberton_ROI_lab.tif') as src:
