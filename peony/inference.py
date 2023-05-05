@@ -5,7 +5,7 @@ import numpy as np
 def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path, likelihood=lambda x, y: x, prob_scale=10000):
     with rasterio.open(hypothesis_path) as h_src:
         hypothesis = h_src.read()
-        cmap = h_src.colormap()
+        cmap = h_src.colormap(1)
         profile = h_src.profile
         with rasterio.open(evidence_path) as e_src:
             evidence = e_src.read(
@@ -17,4 +17,4 @@ def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path
     posterior = np.clip(posterior, 0, prob_scale)
     with rasterio.open(posterior_path, 'w', **profile) as dst:
         dst.write(posterior)
-        dst.write_colormap(cmap)
+        dst.write_colormap(1, cmap)
