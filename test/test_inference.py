@@ -44,6 +44,7 @@ def esa_world_cover_to_lcz_likelihood(esa_wc, lcz):
     likelihood = np.swapaxes(likelihood, 0, 2)
     likelihood = np.swapaxes(likelihood, 0, 1)
     esa_wc = esa_wc[0]
+    assert esa_wc.shape == likelihood.shape, f"{esa_wc.shape} != {likelihood.shape}"
     likelihood[np.argwhere(esa_wc == 10)] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1])
     likelihood[np.argwhere(esa_wc == 20)] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5, 0.9, 0.5, 0.1, 0.1, 0.1])
     likelihood[np.argwhere(esa_wc == 30)] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.1, 0.1, 0.1])
