@@ -41,23 +41,32 @@ import rasterio
 
 def esa_world_cover_to_lcz_likelihood(esa_wc, lcz):
     likelihood = np.zeros(lcz.shape)
-    likelihood = np.swapaxes(likelihood, 0, 2)
-    likelihood = np.swapaxes(likelihood, 0, 1)
     esa_wc = esa_wc[0]
     assert esa_wc.shape == likelihood.shape[:-1], f"{esa_wc.shape} != {likelihood.shape}"
-    likelihood[np.transpose(np.nonzero(esa_wc == 10))] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1])
-    likelihood[np.transpose(np.nonzero(esa_wc == 20))] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5, 0.9, 0.5, 0.1, 0.1, 0.1])
-    likelihood[np.transpose(np.nonzero(esa_wc == 30))] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.1, 0.1, 0.1])
-    likelihood[np.transpose(np.nonzero(esa_wc == 40))] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.1, 0.1, 0.1])
-    likelihood[np.transpose(np.nonzero(esa_wc == 50))] = np.array([0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
-    likelihood[np.transpose(np.nonzero(esa_wc == 60))] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.9, 0.1, 0.1, 0.1])
-    likelihood[np.transpose(np.nonzero(esa_wc == 70))] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
-    likelihood[np.transpose(np.nonzero(esa_wc == 80))] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9])
-    likelihood[np.transpose(np.nonzero(esa_wc == 90))] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
-    likelihood[np.transpose(np.nonzero(esa_wc == 95))] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
-    likelihood[np.transpose(np.nonzero(esa_wc == 100))] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
-    likelihood = np.swapaxes(likelihood, 0, 1)
-    likelihood = np.swapaxes(likelihood, 0, 2)
+    p = [
+        np.nonzero(esa_wc == 10),
+        np.nonzero(esa_wc == 20),
+        np.nonzero(esa_wc == 30),
+        np.nonzero(esa_wc == 40),
+        np.nonzero(esa_wc == 50),
+        np.nonzero(esa_wc == 60),
+        np.nonzero(esa_wc == 70),
+        np.nonzero(esa_wc == 80),
+        np.nonzero(esa_wc == 90),
+        np.nonzero(esa_wc == 95),
+        np.nonzero(esa_wc == 100)
+    ]
+    likelihood[:, p[0][0], p[0][1]] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.5, 0.1, 0.1, 0.1, 0.1, 0.1])
+    likelihood[:, p[1][0], p[1][1]] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.5, 0.9, 0.5, 0.1, 0.1, 0.1])
+    likelihood[:, p[2][0], p[2][1]] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.1, 0.1, 0.1])
+    likelihood[:, p[3][0], p[3][1]] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.1, 0.1, 0.1])
+    likelihood[:, p[4][0], p[4][1]] = np.array([0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.9, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
+    likelihood[:, p[5][0], p[5][1]] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9, 0.9, 0.1, 0.1, 0.1])
+    likelihood[:, p[6][0], p[6][1]] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
+    likelihood[:, p[7][0], p[7][1]] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.9])
+    likelihood[:, p[8][0], p[8][1]] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
+    likelihood[:, p[9][0], p[9][1]] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
+    likelihood[:, p[10][0], p[10][1]] = np.array([0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1])
     return likelihood
 
 def test_bayesian_inference(tmp_path):
