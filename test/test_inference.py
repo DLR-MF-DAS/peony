@@ -42,7 +42,7 @@ import rasterio
 def esa_world_cover_to_lcz_likelihood(esa_wc, lcz):
     likelihood = np.zeros(lcz.shape)
     esa_wc = esa_wc[0]
-    assert esa_wc.shape == likelihood.shape[:-1], f"{esa_wc.shape} != {likelihood.shape}"
+    assert esa_wc.shape == likelihood.shape[1:], f"{esa_wc.shape} != {likelihood.shape}"
     p = [
         np.nonzero(esa_wc == 10),
         np.nonzero(esa_wc == 20),
