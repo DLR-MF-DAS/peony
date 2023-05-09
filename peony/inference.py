@@ -12,6 +12,7 @@ def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path
                 resampling=Resampling.nearest)
     assert hypothesis.shape[1:] == evidence.shape[1:], f"hypothesis shape {hypothesis.shape} is not the same as evidence shape {evidence.shape}"
     posterior = likelihood(evidence, hypothesis) * hypothesis
+    posterior = np.nan_to_num(posterior)
     posterior = posterior / posterior.sum(axis=0).astype(float)
     assert (posterior.sum(axis=0) == 1.0).all()
     posterior = np.rint(posterior * prob_scale).astype(int)
