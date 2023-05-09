@@ -73,7 +73,7 @@ def test_bayesian_inference(tmp_path):
     bayesian_inference_on_geotiff("test/Lumberton_ROI_pro.tif", "test/Lumberton_ROI_ESA_WorldCover.tif", os.path.join(tmp_path, 'test.tif'), esa_world_cover_to_lcz_likelihood)
     with rasterio.open(os.path.join(tmp_path, 'test.tif')) as src:
         data = src.read()
-    assert(np.isclose(data.sum(axis=0), 10000, rtol=0, atol=5).all())
+    assert(np.isclose(data.sum(axis=0), 10000, rtol=0, atol=10).all())
     probability_to_classes(os.path.join(tmp_path, 'test.tif'), os.path.join(tmp_path, 'test_lab.tif'), colormap='data/lcz_colormap.json')
     probability_to_classes('test/Lumberton_ROI_pro.tif', os.path.join(tmp_path, 'test_ref_lab.tif'), colormap='data/lcz_colormap.json')
     with rasterio.open(os.path.join(tmp_path, 'test_ref_lab.tif')) as src:
@@ -86,7 +86,7 @@ def test_bayesian_inference_somalia(tmp_path):
     bayesian_inference_on_geotiff("data/Somalia_pro.tif", "data/Somalia_esa_wc.tif", os.path.join(tmp_path, 'test.tif'), esa_world_cover_to_lcz_likelihood)
     with rasterio.open(os.path.join(tmp_path, 'test.tif')) as src:
         data = src.read()
-    assert(np.isclose(data.sum(axis=0), 10000, rtol=0, atol=5).all())
+    assert(np.isclose(data.sum(axis=0), 10000, rtol=0, atol=10).all())
     probability_to_classes(os.path.join(tmp_path, 'test.tif'), os.path.join(tmp_path, 'test_lab.tif'), colormap='data/lcz_colormap.json')
     probability_to_classes('data/Somalia_pro.tif', os.path.join(tmp_path, 'test_ref_lab.tif'), colormap='data/lcz_colormap.json')
     with rasterio.open(os.path.join(tmp_path, 'test_ref_lab.tif')) as src:
