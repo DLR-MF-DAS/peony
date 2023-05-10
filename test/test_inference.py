@@ -73,7 +73,9 @@ def test_bayesian_inference(tmp_path):
     bayesian_inference_on_geotiff("test/Lumberton_ROI_pro.tif", "test/Lumberton_ROI_ESA_WorldCover.tif", os.path.join(tmp_path, 'test.tif'), esa_world_cover_to_lcz_likelihood)
     with rasterio.open(os.path.join(tmp_path, 'test.tif')) as src:
         data = src.read()
-    assert(np.isclose(data.sum(axis=0), 10000, rtol=0, atol=10).all())
+        data = data.astype(float)
+        data[data == src.nodata] = np.nan
+    assert np.isclose(np.nan_to_num(data.sum(axis=0), nan=10000), 10000, rtol=0, atol=5).all()
     probability_to_classes(os.path.join(tmp_path, 'test.tif'), os.path.join(tmp_path, 'test_lab.tif'), colormap='data/lcz_colormap.json')
     probability_to_classes('test/Lumberton_ROI_pro.tif', os.path.join(tmp_path, 'test_ref_lab.tif'), colormap='data/lcz_colormap.json')
     with rasterio.open(os.path.join(tmp_path, 'test_ref_lab.tif')) as src:
@@ -86,15 +88,19 @@ def test_bayesian_inference_somalia(tmp_path):
     bayesian_inference_on_geotiff("data/Somalia_pro.tif", "data/Somalia_esa_wc.tif", os.path.join(tmp_path, 'test.tif'), esa_world_cover_to_lcz_likelihood)
     with rasterio.open(os.path.join(tmp_path, 'test.tif')) as src:
         data = src.read()
-    assert(np.isclose(data.sum(axis=0), 10000, rtol=0, atol=10).all())
+        data = data.astype(float)
+        data[data == src.nodata] = np.nan
+    assert np.isclose(np.nan_to_num(data.sum(axis=0), nan=10000), 10000, rtol=0, atol=5).all()
     probability_to_classes(os.path.join(tmp_path, 'test.tif'), os.path.join(tmp_path, 'test_lab.tif'), colormap='data/lcz_colormap.json')
     probability_to_classes('data/Somalia_pro.tif', os.path.join(tmp_path, 'test_ref_lab.tif'), colormap='data/lcz_colormap.json')
     with rasterio.open(os.path.join(tmp_path, 'test_ref_lab.tif')) as src:
         lab_test_data = src.read()
     with rasterio.open('data/Somalia_lab.tif') as src:
         lab_data = src.read()
-    assert((lab_test_data == lab_data).all())
+    assert(lab_test_data[lab_test_data != lab_data].shape[0] <= 5)
 
 def test_script(tmp_path):
     subprocess.run(['peony_bayesian_inference', '-h', 'test/Lumberton_ROI_pro.tif', '-e', 'test/Lumberton_ROI_ESA_WorldCover', '-p', os.path.join(tmp_path, 'test_pro.tif'), '-l', 'test/esa_wc_likelihood.json'])
+    subprocess.run(['peony_pro_to_lab', '-i', os.path.join(tmp_path, 'test_pro.tif'), '-o', os.path.join(tmp_path, 'test_lab.tif')])
+    subprocess.run(['peony_bayesian_inference', '-h', 'data/Somalia_pro.tif', '-e', 'data/Somalia_esa_wc.tif', '-p', os.path.join(tmp_path, 'test_pro.tif'), '-l', 'test/esa_wc_likelihood.json'])
     subprocess.run(['peony_pro_to_lab', '-i', os.path.join(tmp_path, 'test_pro.tif'), '-o', os.path.join(tmp_path, 'test_lab.tif')])

@@ -14,8 +14,12 @@ def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path
     posterior = likelihood(evidence, hypothesis) * hypothesis
     posterior = np.nan_to_num(posterior)
     posterior = posterior / posterior.sum(axis=0).astype(float)
-    assert (posterior.sum(axis=0) == 1.0).all()
-    posterior = np.rint(posterior * prob_scale).astype(int)
-    posterior = np.clip(posterior, 0, prob_scale)
+    assert np.isclose(np.nan_to_num(posterior.sum(axis=0), nan=1.0), 1.0).all()
     with rasterio.open(posterior_path, 'w', **profile) as dst:
+        nan_values = np.isnan(posterior)
+        posterior = np.rint(posterior * prob_scale).astype(int)
+        posterior = np.clip(posterior, 0, prob_scale)
+        if dst.nodata is None:
+            dst.nodata = -1
+        posterior[nan_values] = dst.nodata
         dst.write(posterior)

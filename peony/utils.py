@@ -29,7 +29,7 @@ def probability_to_classes(pro_geotiff, lab_geotiff, index_to_label=lambda x: x 
         pro = src.read()
         profile = src.profile
     lab = index_to_label(np.argmax(pro, axis=0))
-    profile.update(dtype=rasterio.uint8, count=1, compress='lzw')
+    profile.update(dtype=rasterio.uint8, count=1, compress='lzw', nodata=0)
     with rasterio.open(lab_geotiff, 'w', **profile) as dst:
         dst.write(lab, 1)
         if colormap is not None:
