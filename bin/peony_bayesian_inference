@@ -9,13 +9,11 @@ import numpy as np
 def json_to_likelihood(data):
     def likelihood_function(evidence, hypothesis):
         likelihood = np.zeros(hypothesis.shape)
-        likelihood = np.swapaxes(likelihood, 0, 2)
-        likelihood = np.swapaxes(likelihood, 0, 1)
         evidence = evidence[0]
         for key in data:
+            matches = np.nonzero(evidence == int(key))
+            likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array(data[key]), matches[0].shape[0], axis=0))
             likelihood[np.argwhere(evidence == int(key))] = np.array(data[key])
-        likelihood = np.swapaxes(likelihood, 0, 1)
-        likelihood = np.swapaxes(likelihood, 0, 2)
         return likelihood
     return likelihood_function
 
