@@ -100,7 +100,7 @@ def test_bayesian_inference_somalia(tmp_path):
     assert(lab_test_data[lab_test_data != lab_data].shape[0] <= 5)
 
 def test_script(tmp_path):
-    subprocess.run(['peony_bayesian_inference', '-h', 'test/Lumberton_ROI_pro.tif', '-e', 'test/Lumberton_ROI_ESA_WorldCover', '-p', os.path.join(tmp_path, 'test_pro.tif'), '-l', 'test/esa_wc_likelihood.json'])
-    subprocess.run(['peony_pro_to_lab', '-i', os.path.join(tmp_path, 'test_pro.tif'), '-o', os.path.join(tmp_path, 'test_lab.tif')])
-    subprocess.run(['peony_bayesian_inference', '-h', 'data/Somalia_pro.tif', '-e', 'data/Somalia_esa_wc.tif', '-p', os.path.join(tmp_path, 'test_pro.tif'), '-l', 'test/esa_wc_likelihood.json'])
-    subprocess.run(['peony_pro_to_lab', '-i', os.path.join(tmp_path, 'test_pro.tif'), '-o', os.path.join(tmp_path, 'test_lab.tif')])
+    subprocess.check_output(['peony_bayesian_inference', '-h', 'test/Lumberton_ROI_pro.tif', '-e', 'test/Lumberton_ROI_ESA_WorldCover.tif', '-p', os.path.join(tmp_path, 'test_pro.tif'), '-l', 'data/esa_wc_likelihood.json'])
+    subprocess.check_output(['peony_pro_to_lab', '-i', os.path.join(tmp_path, 'test_pro.tif'), '-o', os.path.join(tmp_path, 'test_lab.tif')])
+    subprocess.check_output(['peony_bayesian_inference', '-h', 'data/Somalia_pro.tif', '-e', 'data/Somalia_esa_wc.tif', '-p', os.path.join(tmp_path, 'test_pro.tif'), '-l', 'data/esa_wc_likelihood.json'])
+    subprocess.check_output(['peony_pro_to_lab', '-i', os.path.join(tmp_path, 'test_pro.tif'), '-o', os.path.join(tmp_path, 'test_lab.tif')])
