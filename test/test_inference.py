@@ -104,6 +104,11 @@ def test_script(tmp_path):
     assert(os.path.exists(os.path.join(tmp_path, 'test_pro.tif')))
     subprocess.run(['peony_pro_to_lab', '-i', os.path.join(tmp_path, 'test_pro.tif'), '-o', os.path.join(tmp_path, 'test_lab.tif')])
     assert(os.path.exists(os.path.join(tmp_path, 'test_lab.tif')))
+    with rasterio.open('data/test/Lumberton_ROI_lab.tif') as src:
+        data_1 = src.read()
+    with rasterio.open(os.path.join(tmp_path, 'test_lab.tif')) as src:
+        data_2 = src.read()
+    assert((data_1 == data_2).all())
     subprocess.run(['peony_bayesian_inference', '-h', 'data/Somalia_pro.tif', '-e', 'data/Somalia_esa_wc.tif', '-p', os.path.join(tmp_path, 'somalia_pro.tif'), '-l', 'data/esa_wc_likelihood_uniform.json'])
     assert(os.path.exists(os.path.join(tmp_path, 'somalia_pro.tif')))
     subprocess.run(['peony_pro_to_lab', '-i', os.path.join(tmp_path, 'somalia_pro.tif'), '-o', os.path.join(tmp_path, 'somalia_lab.tif')])
