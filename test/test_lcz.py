@@ -8,10 +8,10 @@ import rasterio
 from peony.lcz import inferenceData
 
 def test_inference(tmp_path):
-    inferenceData("test/0_0.tif", "data/s2_lcz_weights.hdf5", tmp_path)
-    with rasterio.open("test/0_0_lab_ref.tif") as src:
+    inferenceData("data/0_0.tif", "data/s2_lcz_weights.hdf5", tmp_path)
+    with rasterio.open("data/0_0_lab_ref.tif") as src:
         lab_ref = src.read()
-    with rasterio.open("test/0_0_pro_ref.tif") as src:
+    with rasterio.open("data/0_0_pro_ref.tif") as src:
         pro_ref = src.read()  
     assert os.path.exists(os.path.join(tmp_path, "0_0_lab.tif"))
     assert os.path.exists(os.path.join(tmp_path, "0_0_pro.tif"))
