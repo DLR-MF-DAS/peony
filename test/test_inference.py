@@ -40,17 +40,17 @@ import rasterio
 # 17 (G) - Water
 
 def test_bayesian_inference(tmp_path):
-    bayesian_inference_on_geotiff("test/Lumberton_ROI_pro.tif", "test/Lumberton_ROI_ESA_WorldCover.tif", os.path.join(tmp_path, 'test.tif'), json_to_likelihood('data/esa_wc_likelihood_uniform.json'))
+    bayesian_inference_on_geotiff("data/Lumberton_ROI_pro.tif", "data/Lumberton_ROI_ESA_WorldCover.tif", os.path.join(tmp_path, 'test.tif'), json_to_likelihood('data/esa_wc_likelihood_uniform.json'))
     with rasterio.open(os.path.join(tmp_path, 'test.tif')) as src:
         data = src.read()
         data = data.astype(float)
         data[data == src.nodata] = np.nan
     assert np.isclose(np.nan_to_num(data.sum(axis=0), nan=10000), 10000, rtol=0, atol=5).all()
     probability_to_classes(os.path.join(tmp_path, 'test.tif'), os.path.join(tmp_path, 'test_lab.tif'), colormap='data/lcz_colormap.json')
-    probability_to_classes('test/Lumberton_ROI_pro.tif', os.path.join(tmp_path, 'test_ref_lab.tif'), colormap='data/lcz_colormap.json')
+    probability_to_classes('data/Lumberton_ROI_pro.tif', os.path.join(tmp_path, 'test_ref_lab.tif'), colormap='data/lcz_colormap.json')
     with rasterio.open(os.path.join(tmp_path, 'test_ref_lab.tif')) as src:
         lab_test_data = src.read()
-    with rasterio.open('test/Lumberton_ROI_lab.tif') as src:
+    with rasterio.open('data/Lumberton_ROI_lab.tif') as src:
         lab_data = src.read()
     assert((lab_test_data == lab_data).all())
 
@@ -70,7 +70,7 @@ def test_bayesian_inference_somalia(tmp_path):
     assert(lab_test_data[lab_test_data != lab_data].shape[0] <= 5)
 
 def test_script(tmp_path):
-    subprocess.run(['peony_bayesian_inference', '-h', 'test/Lumberton_ROI_pro.tif', '-e', 'test/Lumberton_ROI_ESA_WorldCover.tif', '-p', os.path.join(tmp_path, 'test_pro.tif'), '-l', 'data/esa_wc_likelihood_uniform.json'])
+    subprocess.run(['peony_bayesian_inference', '-h', 'data/Lumberton_ROI_pro.tif', '-e', 'data/Lumberton_ROI_ESA_WorldCover.tif', '-p', os.path.join(tmp_path, 'test_pro.tif'), '-l', 'data/esa_wc_likelihood_uniform.json'])
     assert(os.path.exists(os.path.join(tmp_path, 'test_pro.tif')))
     subprocess.run(['peony_pro_to_lab', '-i', os.path.join(tmp_path, 'test_pro.tif'), '-o', os.path.join(tmp_path, 'test_lab.tif')])
     assert(os.path.exists(os.path.join(tmp_path, 'test_lab.tif')))
