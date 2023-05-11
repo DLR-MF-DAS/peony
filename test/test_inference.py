@@ -104,7 +104,7 @@ def test_script(tmp_path):
     assert(os.path.exists(os.path.join(tmp_path, 'test_pro.tif')))
     subprocess.run(['peony_pro_to_lab', '-i', os.path.join(tmp_path, 'test_pro.tif'), '-o', os.path.join(tmp_path, 'test_lab.tif')])
     assert(os.path.exists(os.path.join(tmp_path, 'test_lab.tif')))
-    with rasterio.open('data/test/Lumberton_ROI_lab.tif') as src:
+    with rasterio.open('test/Lumberton_ROI_lab.tif') as src:
         data_1 = src.read()
     with rasterio.open(os.path.join(tmp_path, 'test_lab.tif')) as src:
         data_2 = src.read()
