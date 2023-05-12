@@ -55,7 +55,7 @@ def test_bayesian_inference(tmp_path):
     with rasterio.open('data/Lumberton_ROI_lab.tif') as src:
         lab_data = src.read()
     assert((lab_test_data == lab_data).all())
-    #assert((bayes_lab == lab_data).all())
+    assert((bayes_lab == lab_data).all())
 
 def test_bayesian_inference_somalia(tmp_path):
     bayesian_inference_on_geotiff("data/Somalia_pro.tif", "data/Somalia_esa_wc.tif", os.path.join(tmp_path, 'test.tif'), json_to_likelihood('data/esa_wc_likelihood_uniform.json'))

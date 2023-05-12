@@ -8,9 +8,6 @@ def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path
         hypothesis = h_src.read()
         profile = h_src.profile
         with rasterio.open(evidence_path) as e_src:
-            #evidence = e_src.read(
-            #    out_shape=(e_src.count, h_src.height, h_src.width),
-            #    resampling=Resampling.nearest)
             evidence = e_src.read()
             evidence = resample_2d(evidence[0], h_src.height, h_src.width)
     assert hypothesis.shape[1:] == evidence.shape, f"hypothesis shape {hypothesis.shape} is not the same as evidence shape {evidence.shape}"
