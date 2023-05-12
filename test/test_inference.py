@@ -48,11 +48,14 @@ def test_bayesian_inference(tmp_path):
     assert np.isclose(np.nan_to_num(data.sum(axis=0), nan=10000), 10000, rtol=0, atol=5).all()
     probability_to_classes(os.path.join(tmp_path, 'test.tif'), os.path.join(tmp_path, 'test_lab.tif'), colormap='data/lcz_colormap.json')
     probability_to_classes('data/Lumberton_ROI_pro.tif', os.path.join(tmp_path, 'test_ref_lab.tif'), colormap='data/lcz_colormap.json')
+    with rasterio.open(os.path.join(tmp_path, 'test_lab.tif')) as src:
+        bayes_lab = src.read()
     with rasterio.open(os.path.join(tmp_path, 'test_ref_lab.tif')) as src:
         lab_test_data = src.read()
     with rasterio.open('data/Lumberton_ROI_lab.tif') as src:
         lab_data = src.read()
     assert((lab_test_data == lab_data).all())
+    #assert((bayes_lab == lab_data).all())
 
 def test_bayesian_inference_somalia(tmp_path):
     bayesian_inference_on_geotiff("data/Somalia_pro.tif", "data/Somalia_esa_wc.tif", os.path.join(tmp_path, 'test.tif'), json_to_likelihood('data/esa_wc_likelihood_uniform.json'))
