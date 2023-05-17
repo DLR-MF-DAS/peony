@@ -3,6 +3,7 @@ import rasterio
 import numpy as np
 from geoalchemy2 import WKTElement
 from scipy.interpolate import RegularGridInterpolator
+import logging
 
 
 def geojson_to_wktelement(jsonfile, to_srs='epsg:3857'):
@@ -58,9 +59,24 @@ def json_to_likelihood(json_file):
         data = json.load(fd)
     def likelihood_function(evidence, hypothesis):
         likelihood = np.zeros(hypothesis.shape)
+        cumulative_matches = np.zeros(evidence.shape)
+        cumulative_matches = cumulative_matches.astype(bool)
         for key in data:
-            matches = np.nonzero(evidence == int(key))
-            likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([data[key]]), matches[0].shape[0], axis=0))
+            if key not in ['nodata', 'otherwise']:
+                matches = np.nonzero(evidence == int(key))
+                cumulative_matches += (evidence == int(key))
+                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([data[key]]), matches[0].shape[0], axis=0))
+            try:
+                matches = np.nonzero(np.isnan(evidence))
+                cumulative_matches += np.isnan(evidence)
+                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([data['nodata']]), matches[0].shape[0], axis=0))
+            except KeyError:
+                logging.debug('no nodata likelihood specified')
+            try:
+                matches = np.nonzero(cumulative_matches)
+                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([data['otherwise']]), matches[0].shape[0], axis=0))
+            except KeyError:
+                logging.debug('no otherwise likelihood specified')
         return likelihood
     return likelihood_function
 
