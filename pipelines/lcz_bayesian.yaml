@@ -67,10 +67,36 @@ steps:
       stepname: crop_wsf_3d
       outputFile: '{workdir}/{name}_wsf_3d.tif'
       cmd:
-        run: peony_crop_from_tiff -i {path} -o {workdir}/{name}_wsf_3d.tif -g /home/ge83noc2/WSF3D_V02_BuildingHeight.tif
+        run: peony_crop_from_tiff -g {path} -o {workdir}/{name}_wsf_3d.tif -i /home/ge83noc2/WSF3D_V02_BuildingHeight.tif
         cwd: '{workdir}'
         stdout: '{workdir}/crop_wsf_3d.stdout.log'
         stderr: '{workdir}/crop_wsf_3d.stderr.log'
+
+  - name: peony.cmd
+    onError: 'bayesian inference with WSF 3D failed for {path} in {workdir}'
+    in:
+      stepname: inference_wsf_3d
+      outputFile: '{workdir}/{name}_wsf_3d_pro.tif'
+      inputFiles:
+        - '{workdir}/{name}_wsf_3d.tif'
+      cmd:
+        run: peony_bayesian_inference -h {workdir}/{name}_b_pro.tif -e {workdir}/{name}_wsf_3d.tif -p {workdir}/{name}_wsf_3d_pro.tif -l /peony/data/lcz_to_wsf_3d.json
+        cwd: '{workdir}'
+        stdout: '{workdir}/inference_wsf_3d.stdout.log'
+        stderr: '{workdir}/inference_wsf_3d.stderr.log'
+
+  - name: peony.cmd
+    onError: 'converting WSF 3D probabilities to labels failed for {path} in {workdir}'
+    in:
+      stepname: pro_to_lab_wsf_3d
+      outputFile: '{workdir}/{name}_wsf_3d_lab.tif'
+      inputFiles:
+        - '{workdir}/{name}_wsf_3d_pro.tif'
+      cmd:
+        run: peony_pro_to_lab -i {workdir}/{name}_wsf_3d_pro.tif -o {workdir}/{name}_wsf_3d_lab.tif -c /peony/data/lcz_colormap.json
+        cwd: '{workdir}'
+        stdout: '{workdir}/pro_to_lab_wsf_3d.stdout.log'
+        stderr: '{workdir}/pro_to_lab_wsf_3d.stderr.log'
 
 on_failure:
   - name: pypyr.steps.filewrite
