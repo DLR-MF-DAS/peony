@@ -43,7 +43,7 @@ def probability_to_classes(pro_geotiff, lab_geotiff, index_to_label=lambda x: x 
             dst.write_colormap(1, cmap)
 
 
-def json_to_likelihood(json_file):
+def json_to_likelihood(json_file, nodata=None):
     """Create a likelihood from a json file.
 
     Parameters
@@ -67,8 +67,8 @@ def json_to_likelihood(json_file):
                 cumulative_matches += (evidence == int(key))
                 likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([data[key]]), matches[0].shape[0], axis=0))
             try:
-                matches = np.nonzero(np.isnan(evidence))
-                cumulative_matches += np.isnan(evidence)
+                matches = np.nonzero(evidence == nodata)
+                cumulative_matches += (evidence == nodata)
                 likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([data['nodata']]), matches[0].shape[0], axis=0))
             except KeyError:
                 logging.debug('no nodata likelihood specified')

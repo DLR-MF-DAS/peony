@@ -3,6 +3,7 @@
 
 from peony.inference import bayesian_inference_on_geotiff
 from peony.utils import json_to_likelihood
+import rasterio
 import click
 import json
 import numpy as np
@@ -13,7 +14,9 @@ import numpy as np
 @click.option("-p", "--posterior", help="Name of the file to write the posterior distribution")
 @click.option("-l", "--likelihood", help="YAML with the likelihood transformation")
 def main(hypothesis, evidence, posterior, likelihood):
-    bayesian_inference_on_geotiff(hypothesis, evidence, posterior, json_to_likelihood(likelihood))
+    with rasterio.open(evidence) as src:
+        nodata = src.nodata
+    bayesian_inference_on_geotiff(hypothesis, evidence, posterior, json_to_likelihood(likelihood, nodata=nodata))
 
 if __name__ == '__main__':
     main()
