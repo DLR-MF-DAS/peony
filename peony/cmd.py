@@ -42,6 +42,20 @@ def run_step(context: Context) -> None:
         outputfile = context.get_formatted('outputFile')
     except KeyNotInContextError:
         outputfile = None
+    context['onError'] = f"step {stepname} failed for {path} in {workdir}"
+    context['cmd']['stdout'] = os.path.join(workdir, f"{stepname}.stdout.log")
+    context['cmd']['stderr'] = os.path.join(workdir, f"{stepname}.stderr.log")
+    context['cmd']['cwd'] = workdir
+    #context.set_defaults(
+    #    {
+    #        'onError': f"step {stepname} failed for {path} in {workdir}",
+    #        'cmd': {
+    #            'stdout': os.path.join(workdir, f"{stepname}.stdout.log"),
+    #            'stderr': os.path.join(workdir, f"{stepname}.stderr.log"),
+    #            'cwd': workdir,
+    #            'run': run
+    #        }
+    #    })
     # If input files don't exist we skip no matter what
     for inputfile in inputfiles:
         if not os.path.exists(inputfile):

@@ -1,29 +1,20 @@
 context_parser: pypyr.parser.keyvaluepairs
 steps:
   - name: peony.cmd
-    onError: 'gee download failed for {path} in {workdir}'
     in:
       stepname: download
       outputFile: '{workdir}/{name}.tif'
       cmd:
         run: peony_gee_download -i {path} -o {name}.tif -p ee-orbitfold --new
-        cwd: '{workdir}'
-        stdout: '{workdir}/gee_download.stdout.log'
-        stderr: '{workdir}/gee_download.stderr.log'
 
   - name: peony.cmd
-    onError: 'esa wc download failed for {path} in {workdir}'
     in:
-        stepname: esa_wc_download
-        outputFile: '{workdir}/{name}_esa_wc.tif'
-        cmd:
-            run: peony_gee_download_arbitrary -g {path} -o {name}_esa_wc.tif -c "ESA/WorldCover/v100"
-            cwd: '{workdir}'
-            stdout: '{workdir}/esa_wc_download.stdout.log'
-            stderr: '{workdir}/esa_wc_download.stderr.log'
+      stepname: esa_wc_download
+      outputFile: '{workdir}/{name}_esa_wc.tif'
+      cmd:
+        run: peony_gee_download_arbitrary -g {path} -o {name}_esa_wc.tif -c "ESA/WorldCover/v100"
 
   - name: peony.cmd
-    onError: 'lcz inference failed for {path} in {workdir}'
     in:
       stepname: inference
       outputFile: '{workdir}/{name}_lab.tif'
@@ -31,12 +22,8 @@ steps:
         - '{workdir}/{name}.tif'
       cmd:
         run: peony_lcz_inference -i {workdir}/{name}.tif -o {workdir} -m /peony/data/s2_lcz_weights.hdf5
-        cwd: '{workdir}'
-        stdout: '{workdir}/lcz_inference.stdout.log'
-        stderr: '{workdir}/lcz_inference.stderr.log'
 
   - name: peony.cmd
-    onError: 'bayesian inference failed for {path} in {workdir}'
     in:
       stepname: bayesian
       outputFile: '{workdir}/{name}_b_pro.tif'
@@ -44,12 +31,8 @@ steps:
         - '{workdir}/{name}_pro.tif'
       cmd:
         run: peony_bayesian_inference -h {workdir}/{name}_pro.tif -e {workdir}/{name}_esa_wc.tif -p {workdir}/{name}_b_pro.tif -l /peony/data/esa_wc_likelihood.json
-        cwd: '{workdir}'
-        stdout: '{workdir}/bayesian.stdout.log'
-        stderr: '{workdir}/bayesian.stderr.log'
 
   - name: peony.cmd
-    onError: 'probability to label conversion failed for {path} in {workdir}'
     in:
       stepname: pro_to_lab
       outputFile: '{workdir}/{name}_b_lab.tif'
@@ -57,23 +40,15 @@ steps:
         - '{workdir}/{name}_b_pro.tif'
       cmd:
         run: peony_pro_to_lab -i {workdir}/{name}_b_pro.tif -o {workdir}/{name}_b_lab.tif -c /peony/data/lcz_colormap.json
-        cwd: '{workdir}'
-        stdout: '{workdir}/pro_to_lab.stdout.log'
-        stderr: '{workdir}/pro_to_lab.stderr.log'
 
   - name: peony.cmd
-    onError: 'cropping WSF 3D geotiff failed for {path} in {workdir}'
     in:
       stepname: crop_wsf_3d
       outputFile: '{workdir}/{name}_wsf_3d.tif'
       cmd:
         run: peony_crop_from_tiff -g {path} -o {workdir}/{name}_wsf_3d.tif -i /home/ge83noc2/WSF3D_V02_BuildingHeight.tif
-        cwd: '{workdir}'
-        stdout: '{workdir}/crop_wsf_3d.stdout.log'
-        stderr: '{workdir}/crop_wsf_3d.stderr.log'
 
   - name: peony.cmd
-    onError: 'bayesian inference with WSF 3D failed for {path} in {workdir}'
     in:
       stepname: inference_wsf_3d
       outputFile: '{workdir}/{name}_wsf_3d_pro.tif'
@@ -81,12 +56,8 @@ steps:
         - '{workdir}/{name}_wsf_3d.tif'
       cmd:
         run: peony_bayesian_inference -h {workdir}/{name}_b_pro.tif -e {workdir}/{name}_wsf_3d.tif -p {workdir}/{name}_wsf_3d_pro.tif -l /peony/data/lcz_to_wsf_3d.json
-        cwd: '{workdir}'
-        stdout: '{workdir}/inference_wsf_3d.stdout.log'
-        stderr: '{workdir}/inference_wsf_3d.stderr.log'
 
   - name: peony.cmd
-    onError: 'converting WSF 3D probabilities to labels failed for {path} in {workdir}'
     in:
       stepname: pro_to_lab_wsf_3d
       outputFile: '{workdir}/{name}_wsf_3d_lab.tif'
@@ -94,9 +65,6 @@ steps:
         - '{workdir}/{name}_wsf_3d_pro.tif'
       cmd:
         run: peony_pro_to_lab -i {workdir}/{name}_wsf_3d_pro.tif -o {workdir}/{name}_wsf_3d_lab.tif -c /peony/data/lcz_colormap.json
-        cwd: '{workdir}'
-        stdout: '{workdir}/pro_to_lab_wsf_3d.stdout.log'
-        stderr: '{workdir}/pro_to_lab_wsf_3d.stderr.log'
 
 on_failure:
   - name: pypyr.steps.filewrite
