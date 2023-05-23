@@ -5,28 +5,28 @@ steps:
       stepname: download_winter
       outputFile: '{workdir}/winter_{name}.tif'
       cmd:
-        run: peony_gee_download -i {path} -o winter_{name}.tif -p ee-orbitfold --new --start-date=01.01.2019 --end-date=01.03.2019
+        run: peony_gee_download -i {path} -o winter_{name}.tif -p ee-orbitfold --new --start-date="2019-01-01" --end-date="2019-03-01"
 
   - name: peony.cmd
     in:
       stepname: download_spring
       outputFile: '{workdir}/spring_{name}.tif'
       cmd:
-        run: peony_gee_download -i {path} -o spring_{name}.tif -p ee-orbitfold --new --start-date=01.03.2019 --end-date=01.06.2019
+        run: peony_gee_download -i {path} -o spring_{name}.tif -p ee-orbitfold --new --start-date="2019-03-01" --end-date="2019-06-01"
 
   - name: peony.cmd
     in:
       stepname: download_summer
       outputFile: '{workdir}/summer_{name}.tif'
       cmd:
-        run: peony_gee_download -i {path} -o summer_{name}.tif -p ee-orbitfold --new --start-date=01.06.2019 --end-date=01.09.2019
+        run: peony_gee_download -i {path} -o summer_{name}.tif -p ee-orbitfold --new --start-date="2019-06-01" --end-date="2019-09-01"
 
   - name: peony.cmd
     in:
       stepname: download_autumn
       outputFile: '{workdir}/autumn_{name}.tif'
       cmd:
-        run: peony_gee_download -i {path} -o autumn_{name}.tif -p ee-orbitfold --new --start-date=01.09.2019 --end-date=01.01.2020
+        run: peony_gee_download -i {path} -o autumn_{name}.tif -p ee-orbitfold --new --start-date="2019-09-01" --end-date="2020-01-01"
 
   - name: peony.cmd
     in:
