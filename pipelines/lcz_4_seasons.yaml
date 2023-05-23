@@ -1,0 +1,114 @@
+context_parser: pypyr.parser.keyvaluepairs
+steps:
+  - name: peony.cmd
+    in:
+      stepname: download_winter
+      outputFile: '{workdir}/winter_{name}.tif'
+      cmd:
+        run: peony_gee_download -i {path} -o winter_{name}.tif -p ee-orbitfold --new --start-date=01.01.2019 --end-date=01.03.2019
+
+  - name: peony.cmd
+    in:
+      stepname: download_spring
+      outputFile: '{workdir}/spring_{name}.tif'
+      cmd:
+        run: peony_gee_download -i {path} -o spring_{name}.tif -p ee-orbitfold --new --start-date=01.03.2019 --end-date=01.06.2019
+
+  - name: peony.cmd
+    in:
+      stepname: download_summer
+      outputFile: '{workdir}/summer_{name}.tif'
+      cmd:
+        run: peony_gee_download -i {path} -o summer_{name}.tif -p ee-orbitfold --new --start-date=01.06.2019 --end-date=01.09.2019
+
+  - name: peony.cmd
+    in:
+      stepname: download_autumn
+      outputFile: '{workdir}/autumn_{name}.tif'
+      cmd:
+        run: peony_gee_download -i {path} -o autumn_{name}.tif -p ee-orbitfold --new --start-date=01.09.2019 --end-date=01.01.2020
+
+  - name: peony.cmd
+    in:
+      stepname: inference_winter
+      outputFile: '{workdir}/winter_{name}_lab.tif'
+      inputFiles:
+        - '{workdir}/winter_{name}.tif'
+      cmd:
+        run: peony_lcz_inference -i {workdir}/winter_{name}.tif -o {workdir} -m /peony/data/s2_lcz_weights.hdf5
+
+  - name: peony.cmd
+    in:
+      stepname: inference_spring
+      outputFile: '{workdir}/spring_{name}_lab.tif'
+      inputFiles:
+        - '{workdir}/spring_{name}.tif'
+      cmd:
+        run: peony_lcz_inference -i {workdir}/spring_{name}.tif -o {workdir} -m /peony/data/s2_lcz_weights.hdf5
+
+  - name: peony.cmd
+    in:
+      stepname: inference_summer
+      outputFile: '{workdir}/summer_{name}_lab.tif'
+      inputFiles:
+        - '{workdir}/summer_{name}.tif'
+      cmd:
+        run: peony_lcz_inference -i {workdir}/summer_{name}.tif -o {workdir} -m /peony/data/s2_lcz_weights.hdf5
+
+  - name: peony.cmd
+    in:
+      stepname: inference_autumn
+      outputFile: '{workdir}/autumn_{name}_lab.tif'
+      inputFiles:
+        - '{workdir}/autumn_{name}.tif'
+      cmd:
+        run: peony_lcz_inference -i {workdir}/autumn_{name}.tif -o {workdir} -m /peony/data/s2_lcz_weights.hdf5
+
+  - name: peony.cmd
+    in:
+      stepname: bayesian_one
+      outputFile: '{workdir}/{name}_bayesian_one_pro.tif'
+      inputFiles: 
+        - '{workdir}/winter_{name}_pro.tif'
+        - '{workdir}/spring_{name}_pro.tif'
+      cmd:
+        run: peony_bayesian_inference -h {workdir}/winter_{name}_pro.tif -e {workdir}/spring_{name}_pro.tif -p {workdir}/{name}_bayesian_one_pro.tif
+
+  - name: peony.cmd
+    in:
+      stepname: bayesian_two
+      outputFile: '{workdir}/{name}_bayesian_two_pro.tif'
+      inputFiles: 
+        - '{workdir}/summer_{name}_pro.tif'
+        - '{workdir}/{name}_bayesian_one_pro.tif'
+      cmd:
+        run: peony_bayesian_inference -h {workdir}/{name}_bayesian_one_pro.tif -e {workdir}/summer_{name}_pro.tif -p {workdir}/{name}_bayesian_two_pro.tif
+
+  - name: peony.cmd
+    in:
+      stepname: bayesian_three
+      outputFile: '{workdir}/{name}_bayesian_three_pro.tif'
+      inputFiles: 
+        - '{workdir}/autumn_{name}_pro.tif'
+        - '{workdir}/{name}_bayesian_three_pro.tif'
+      cmd:
+        run: peony_bayesian_inference -h {workdir}/{name}_bayesian_two_pro.tif -e {workdir}/autumn_{name}_pro.tif -p {workdir}/{name}_bayesian_three_pro.tif
+
+  - name: peony.cmd
+    in:
+      stepname: pro_to_lab
+      outputFile: '{workdir}/end_result_lab.tif'
+      inputFiles:
+        - '{workdir}/{name}_bayesian_three_pro.tif'
+      cmd:
+        run: peony_pro_to_lab -i {workdir}/{name}_bayesian_three_pro.tif -o {workdir}/end_result_lab.tif -c /peony/data/lcz_colormap.json
+
+on_failure:
+  - name: pypyr.steps.filewrite
+    in:
+      fileWrite:
+        path: '{logfile}'
+        payload: "FAILURE: {runErrors[0][customError]}\n"
+        append: True
+
+
