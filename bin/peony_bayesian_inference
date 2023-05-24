@@ -16,7 +16,10 @@ import numpy as np
 def main(hypothesis, evidence, posterior, likelihood):
     with rasterio.open(evidence) as src:
         nodata = src.nodata
-    bayesian_inference_on_geotiff(hypothesis, evidence, posterior, json_to_likelihood(likelihood, nodata=nodata))
+    if likelihood is not None:
+        bayesian_inference_on_geotiff(hypothesis, evidence, posterior, json_to_likelihood(likelihood, nodata=nodata))
+    else:
+        bayesian_inference_on_geotiff(hypothesis, evidence, posterior)
 
 if __name__ == '__main__':
     main()

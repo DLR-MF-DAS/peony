@@ -90,7 +90,7 @@ steps:
       outputFile: '{workdir}/{name}_bayesian_three_pro.tif'
       inputFiles: 
         - '{workdir}/autumn_{name}_pro.tif'
-        - '{workdir}/{name}_bayesian_three_pro.tif'
+        - '{workdir}/{name}_bayesian_two_pro.tif'
       cmd:
         run: peony_bayesian_inference -h {workdir}/{name}_bayesian_two_pro.tif -e {workdir}/autumn_{name}_pro.tif -p {workdir}/{name}_bayesian_three_pro.tif
 
