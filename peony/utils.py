@@ -4,6 +4,7 @@ import numpy as np
 from geoalchemy2 import WKTElement
 from scipy.interpolate import RegularGridInterpolator
 import logging
+from ast import literal_eval
 
 
 def geojson_to_wktelement(jsonfile, to_srs='epsg:3857'):
@@ -63,8 +64,13 @@ def json_to_likelihood(json_file, nodata=None):
         cumulative_matches = cumulative_matches.astype(bool)
         for key in data:
             if key not in ['nodata', 'otherwise']:
-                matches = np.nonzero(evidence == int(key))
-                cumulative_matches += (evidence == int(key))
+                eval_key = literal_eval(key)
+                if isinstance(eval_key, tuple):
+                    matches = np.nonzero((eval_key[0] <= evidence) & (evidence < eval_key[1]))
+                    cumulative_matches += ((eval_key[0] <= evidence) & (evidence < eval_key[1]))
+                else:
+                    matches = np.nonzero(evidence == eval_key)
+                    cumulative_matches += (evidence == eval_key)
                 likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([data[key]]), matches[0].shape[0], axis=0))
             try:
                 matches = np.nonzero(evidence == nodata)

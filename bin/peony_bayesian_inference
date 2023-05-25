@@ -19,7 +19,7 @@ def main(hypothesis, evidence, posterior, likelihood):
     if likelihood is not None:
         bayesian_inference_on_geotiff(hypothesis, evidence, posterior, json_to_likelihood(likelihood, nodata=nodata))
     else:
-        bayesian_inference_on_geotiff(hypothesis, evidence, posterior)
+        bayesian_inference_on_geotiff(hypothesis, evidence, posterior, band=None)
 
 if __name__ == '__main__':
     main()
