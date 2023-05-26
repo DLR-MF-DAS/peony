@@ -79,7 +79,7 @@ def json_to_likelihood(json_file, nodata=None):
             except KeyError:
                 logging.debug('no nodata likelihood specified')
             try:
-                matches = np.nonzero(cumulative_matches)
+                matches = np.nonzero(np.logical_not(cumulative_matches))
                 likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([data['otherwise']]), matches[0].shape[0], axis=0))
             except KeyError:
                 logging.debug('no otherwise likelihood specified')
