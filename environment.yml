@@ -97,7 +97,7 @@ dependencies:
   - fsspec=2023.5.0=pyh1a96a4e_0
   - future=0.18.3=pyhd8ed1ab_0
   - gast=0.4.0=pyh9f0ad1d_0
-  - gdal=3.7.0=py39h5a35a9c_2
+  - gdal=3.7.0=py39h5a35a9c_1
   - gdown=4.7.1=pyhd8ed1ab_0
   - geeadd=0.5.6=pyhd8ed1ab_0
   - geedim=1.7.1=pyhd8ed1ab_0
@@ -107,7 +107,7 @@ dependencies:
   - geojson=3.0.1=pyhd8ed1ab_0
   - geomet=1.0.0=pyhd8ed1ab_0
   - geos=3.11.2=hcb278e6_0
-  - geotiff=1.7.1=h22adcc9_9
+  - geotiff=1.7.1=h480ec47_8
   - gettext=0.21.1=h27087fc_0
   - giflib=5.2.1=h0b41bf4_3
   - glib=2.76.3=hfc55251_0
@@ -208,7 +208,7 @@ dependencies:
   - libflac=1.4.2=h27087fc_0
   - libgcc-ng=13.1.0=he5830b7_0
   - libgcrypt=1.10.1=h166bdaf_0
-  - libgdal=3.7.0=h5418a03_2
+  - libgdal=3.7.0=h9f4e061_1
   - libgfortran-ng=13.1.0=h69a702a_0
   - libgfortran5=13.1.0=h15d22d2_0
   - libglib=2.76.3=hebfc3b9_0
@@ -234,7 +234,7 @@ dependencies:
   - librttopo=1.1.0=h0d5128d_13
   - libsndfile=1.2.0=hb75c966_0
   - libsodium=1.0.18=h36c2ea0_1
-  - libspatialite=5.0.1=hca56755_27
+  - libspatialite=5.0.1=hb46c372_26
   - libsqlite=3.42.0=h2797004_0
   - libssh2=1.11.0=h0841786_0
   - libstdcxx-ng=13.1.0=hfd8a6a1_0
@@ -305,7 +305,7 @@ dependencies:
   - poppler=23.05.0=hd18248d_1
   - poppler-data=0.4.12=hd8ed1ab_0
   - postgresql=15.3=hd458b1d_1
-  - proj=9.2.1=ha643af7_0
+  - proj=9.2.0=h8ffa02c_0
   - prometheus_client=0.17.0=pyhd8ed1ab_0
   - prompt-toolkit=3.0.38=pyha770c72_0
   - prompt_toolkit=3.0.38=hd8ed1ab_0
@@ -324,6 +324,7 @@ dependencies:
   - pyopenssl=23.2.0=pyhd8ed1ab_1
   - pyparsing=3.0.9=pyhd8ed1ab_0
   - pyperclip=1.8.2=pyhd8ed1ab_2
+  - pyproj=3.5.0=py39h718ffca_1
   - pypyr=5.8.0=pyhd8ed1ab_1
   - pyqt=5.15.7=py39h5c7b992_3
   - pyqt5-sip=12.11.0=py39h227be39_3
@@ -345,7 +346,7 @@ dependencies:
   - pyyaml=6.0=py39hb9d737c_5
   - pyzmq=25.1.0=py39hb257651_0
   - qt-main=5.15.8=h01ceb2d_12
-  - rasterio=1.3.7=py39head80b8_2
+  - rasterio=1.3.7=py39hefd34d7_1
   - ratelim=0.1.6=py_2
   - re2=2023.02.01=hcb278e6_0
   - readline=8.2=h8228510_1
