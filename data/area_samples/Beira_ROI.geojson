@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "envi_1629877910.kml",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "geometry": { "type": "Polygon", "coordinates": [ [ 34.657479, -19.705501 ], [ 35.079391, -19.701106 ], [ 35.082675, -19.953248 ], [ 34.660098, -19.957704 ], [ 34.657479, -19.705501 ] ] } }
+]
+}
