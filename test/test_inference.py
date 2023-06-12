@@ -1,6 +1,6 @@
 import os
 import numpy as np
-from peony.inference import bayesian_inference_on_geotiff
+from peony.inference import bayesian_inference_on_geotiff, likelihood_from_confusion_matrix
 from peony.utils import probability_to_classes, json_to_likelihood
 import subprocess
 import rasterio
@@ -81,3 +81,30 @@ def test_script(tmp_path):
     assert(os.path.exists(os.path.join(tmp_path, 'somalia_pro.tif')))
     subprocess.run(['peony_pro_to_lab', '-i', os.path.join(tmp_path, 'somalia_pro.tif'), '-o', os.path.join(tmp_path, 'somalia_lab.tif')])
     assert(os.path.exists(os.path.join(tmp_path, 'somalia_lab.tif')))
+
+def test_likelihood_from_confusion_matrix():
+    confusion = {
+        "d": {"d": 0.8, "e": 0.1, "f": 0.1},
+        "e": {"d": 0.1, "e": 0.8, "f": 0.1},
+        "f": {"d": 0.1, "e": 0.1, "f": 0.8}
+    }
+    mapping = {"a": ["e"], "b": ["e"], "c": ["d", "b"]}
+    likelihood = likelihood_from_confusion_matrix(confusion, mapping)
+    ref_likelihood = {
+        "d": {
+            "a": confusion["e"]["d"], 
+            "b": confusion["e"]["d"],
+            "c": confusion["d"]["d"]
+        },
+        "e": {
+            "a": confusion["e"]["e"],
+            "b": confusion["e"]["e"],
+            "c": confusion["d"]["e"] + confusion["f"]["e"]
+        },
+        "f": {
+            "a": confusion["e"]["f"],
+            "b": confusion["e"]["f"],
+            "c": confusion["d"]["f"] + confusion["f"]["f"]
+        }
+    }
+    

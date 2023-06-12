@@ -21,7 +21,7 @@ steps:
       inputFiles:
         - '{workdir}/{name}.tif'
       cmd:
-        run: peony_lcz_inference -i {workdir}/{name}.tif -o {workdir} -m /peony/data/s2_lcz_weights.hdf5
+        run: peony_lcz_inference -i {workdir}/{name}.tif -o {workdir} -m {home}/peony/data/s2_lcz_weights.hdf5
 
   - name: peony.cmd
     in:
@@ -30,7 +30,7 @@ steps:
       inputFiles: 
         - '{workdir}/{name}_pro.tif'
       cmd:
-        run: peony_bayesian_inference -h {workdir}/{name}_pro.tif -e {workdir}/{name}_esa_wc.tif -p {workdir}/{name}_b_pro.tif -l /peony/data/esa_wc_likelihood.json
+        run: peony_bayesian_inference -h {workdir}/{name}_pro.tif -e {workdir}/{name}_esa_wc.tif -p {workdir}/{name}_b_pro.tif -l {home}/peony/data/esa_wc_likelihood.json
 
   - name: peony.cmd
     in:
@@ -39,14 +39,14 @@ steps:
       inputFiles:
         - '{workdir}/{name}_b_pro.tif'
       cmd:
-        run: peony_pro_to_lab -i {workdir}/{name}_b_pro.tif -o {workdir}/{name}_b_lab.tif -c /peony/data/lcz_colormap.json
+        run: peony_pro_to_lab -i {workdir}/{name}_b_pro.tif -o {workdir}/{name}_b_lab.tif -c {home}/peony/data/lcz_colormap.json
 
   - name: peony.cmd
     in:
       stepname: crop_wsf_3d
       outputFile: '{workdir}/{name}_wsf_3d.tif'
       cmd:
-        run: peony_crop_from_tiff -g {path} -o {workdir}/{name}_wsf_3d.tif -i /home/ge83noc2/WSF3D_V02_BuildingHeight.tif
+        run: peony_crop_from_tiff -g {path} -o {workdir}/{name}_wsf_3d.tif -i {home}/WSF3D_V02_BuildingHeight.tif
 
   - name: peony.cmd
     in:
@@ -55,7 +55,7 @@ steps:
       inputFiles:
         - '{workdir}/{name}_wsf_3d.tif'
       cmd:
-        run: peony_bayesian_inference -h {workdir}/{name}_b_pro.tif -e {workdir}/{name}_wsf_3d.tif -p {workdir}/{name}_wsf_3d_pro.tif -l /peony/data/lcz_to_wsf_3d.json
+        run: peony_bayesian_inference -h {workdir}/{name}_b_pro.tif -e {workdir}/{name}_wsf_3d.tif -p {workdir}/{name}_wsf_3d_pro.tif -l {home}/peony/data/lcz_to_wsf_3d.json
 
   - name: peony.cmd
     in:
@@ -64,7 +64,7 @@ steps:
       inputFiles:
         - '{workdir}/{name}_wsf_3d_pro.tif'
       cmd:
-        run: peony_pro_to_lab -i {workdir}/{name}_wsf_3d_pro.tif -o {workdir}/{name}_wsf_3d_lab.tif -c /peony/data/lcz_colormap.json
+        run: peony_pro_to_lab -i {workdir}/{name}_wsf_3d_pro.tif -o {workdir}/{name}_wsf_3d_lab.tif -c {home}/peony/data/lcz_colormap.json
 
 on_failure:
   - name: pypyr.steps.filewrite

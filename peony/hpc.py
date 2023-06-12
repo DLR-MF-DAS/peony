@@ -30,7 +30,7 @@ def pipeline_on_polygon(workdir, pipeline, sqlite_path, polygon, date_range=None
     n_jobs = int(n_jobs)
     Parallel(n_jobs=n_jobs)(delayed(run_pipeline)(entry.path, entry.date, entry.name) for entry in entries)
 
-def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180, 180), latitude_range=(-90, 90), n_jobs=1, overlap_percentage=0.0):
+def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180, 180), latitude_range=(-90, 90), n_jobs=1, overlap_percentage=0.0, **kwargs):
     assert(longitude_range[0] < longitude_range[1])
     assert(latitude_range[0] < latitude_range[1])
     nx = int(np.ceil((longitude_range[1] - longitude_range[0]) / grid_size)) + 1
@@ -56,7 +56,8 @@ def pipeline_on_uniform_grid(workdir, pipeline, grid_size, longitude_range=(-180
         if not os.path.exists(filename):
             with open(filename, 'w') as fd:
                 json.dump(rectangle, fd)
-        pipelinerunner.run(pipeline_name=pipeline, args_in=[f"name={i}_{j}", f"path={filename}", f"workdir={subworkdir}", f"logfile={workdir}/logfile.log"])
+        kwargs_str = [f"{kwarg}={kwargs[kwarg]}" for kwarg in kwargs]
+        pipelinerunner.run(pipeline_name=pipeline, args_in=[f"name={i}_{j}", f"path={filename}", f"workdir={subworkdir}", f"logfile={workdir}/logfile.log"] + kwargs_str)
     info = {'pipeline' : pipeline, 'grid_size' : grid_size, 'longitude_range' : list(longitude_range), 'latitude_range' : list(latitude_range)}
     with open('info.json', 'w') as fd:
         json.dump(info, fd)

@@ -17,7 +17,8 @@ from pypyr import pipelinerunner
 @click.option('-t', '--tile-size', help='Size of the tiles used when processing', default=0.25)
 @click.option('-r', '--post-pipeline', help='Post processing pipeline, takes the following arguments: geojson, geojson_name, lab_names, pro_names, lab_filename, pro_filename')
 @click.option('-n', '--n-jobs', help='Number of jobs to be run in parallel')
-def main(geojson, pipeline, workdir, tile_size, post_pipeline, n_jobs):
+@click.option('-h', '--home', help='Home folder')
+def main(geojson, pipeline, workdir, tile_size, post_pipeline, n_jobs, home):
     geojson_name = pathlib.Path(geojson).stem
     with open(geojson, 'r') as fd:
         data = json.load(fd)
@@ -26,7 +27,7 @@ def main(geojson, pipeline, workdir, tile_size, post_pipeline, n_jobs):
     lon_end = max(p[0] for p in polygon)
     lat_start = min(p[1] for p in polygon)
     lat_end = max(p[1] for p in polygon)
-    indices = pipeline_on_uniform_grid(workdir, pipeline, tile_size, longitude_range=(lon_start, lon_end), latitude_range=(lat_start, lat_end), n_jobs=n_jobs, overlap_percentage=0)
+    indices = pipeline_on_uniform_grid(workdir, pipeline, tile_size, longitude_range=(lon_start, lon_end), latitude_range=(lat_start, lat_end), n_jobs=n_jobs, overlap_percentage=0, home=home)
     lab_names = " ".join([os.path.join(workdir, f"{i}_{j}", f"{i}_{j}_lab.tif") for i, j in indices])
     pro_names = " ".join([os.path.join(workdir, f"{i}_{j}", f"{i}_{j}_pro.tif") for i, j in indices])
     lab_filename = os.path.join(workdir, geojson_name + "_lab.tif")

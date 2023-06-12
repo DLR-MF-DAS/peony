@@ -22,3 +22,7 @@ def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path
         posterior = np.rint(posterior * prob_scale).astype(int)
         posterior = np.clip(posterior, 0, prob_scale)
         dst.write(posterior)
+
+def likelihood_from_confusion_matrix(confusion_matrix, mapping):
+    return {}
+
