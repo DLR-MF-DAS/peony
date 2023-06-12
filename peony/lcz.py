@@ -504,7 +504,7 @@ def inferenceData(input_file, model_file, output_path=None, temperature=1.0, mix
     label_pred = label_prob.argmax(axis=2).astype(np.uint8) + 1
     # set no_data value to LCZ class 0
     label_pred[(label_prob == 0).all(axis=2)] = 0
-    label_pred_file.writeOutput(out_label_tif_mv, np.expand_dims(label_pred, axis=0), lczColor=True, type=np.byte)
+    label_pred_file.writeOutput(out_label_tif_mv, np.expand_dims(label_pred, axis=0), lczColor=True, type=np.uint8)
 
     os.rename(out_prob_tif, '.'.join(out_prob_tif.split('.')[:-1]))
     os.rename(out_label_tif_mv, '.'.join(out_label_tif_mv.split('.')[:-1]))
