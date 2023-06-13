@@ -88,13 +88,13 @@ def test_likelihood_from_confusion_matrix():
         "e": {"d": 0.1, "e": 0.8, "f": 0.1},
         "f": {"d": 0.1, "e": 0.1, "f": 0.8}
     }
-    mapping = {"a": ["e"], "b": ["e"], "c": ["d", "b"]}
+    mapping = {"a": ["e"], "b": ["e"], "c": ["d", "f"]}
     likelihood = likelihood_from_confusion_matrix(confusion, mapping)
     ref_likelihood = {
         "d": {
             "a": confusion["e"]["d"], 
             "b": confusion["e"]["d"],
-            "c": confusion["d"]["d"]
+            "c": confusion["d"]["d"] + confusion["f"]["d"]
         },
         "e": {
             "a": confusion["e"]["e"],
@@ -107,4 +107,5 @@ def test_likelihood_from_confusion_matrix():
             "c": confusion["d"]["f"] + confusion["f"]["f"]
         }
     }
+    assert(likelihood == ref_likelihood)
     

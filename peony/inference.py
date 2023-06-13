@@ -23,6 +23,15 @@ def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path
         posterior = np.clip(posterior, 0, prob_scale)
         dst.write(posterior)
 
-def likelihood_from_confusion_matrix(confusion_matrix, mapping):
-    return {}
+def likelihood_from_confusion_matrix(confusion, mapping):
+    likelihood = {}
+    for e_key in confusion:
+        likelihood[e_key] = {}
+        for h_key in mapping:
+            likelihood[e_key][h_key] = 0.0
+    for e_key in confusion:
+        for h_key in mapping:
+            for m_key in mapping[h_key]:
+                likelihood[e_key][h_key] += confusion[m_key][e_key]
+    return likelihood
 
