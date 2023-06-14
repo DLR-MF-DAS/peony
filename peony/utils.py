@@ -43,6 +43,12 @@ def probability_to_classes(pro_geotiff, lab_geotiff, index_to_label=lambda x: x 
                 cmap = {int(k): v for k, v in cmap.items()}
             dst.write_colormap(1, cmap)
 
+def dict_to_normalized_list(d):
+    """A utility function to convert dictionary to a normalized (adds up to 1) list"""
+    l = list(d.values())
+    s = sum(l)
+    l = [v / s for v in l]
+    return l
 
 def json_to_likelihood(json_file, nodata=None):
     """Create a likelihood from a json file.
@@ -71,16 +77,16 @@ def json_to_likelihood(json_file, nodata=None):
                 else:
                     matches = np.nonzero(evidence == eval_key)
                     cumulative_matches += (evidence == eval_key)
-                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([list(data[key].values())]), matches[0].shape[0], axis=0))
+                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([dict_to_normalized_list(data[key])]), matches[0].shape[0], axis=0))
             try:
                 matches = np.nonzero(evidence == nodata)
                 cumulative_matches += (evidence == nodata)
-                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([list(data['nodata'].values())]), matches[0].shape[0], axis=0))
+                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([dict_to_normalized_list(data['nodata'])]), matches[0].shape[0], axis=0))
             except KeyError:
                 logging.debug('no nodata likelihood specified')
             try:
                 matches = np.nonzero(np.logical_not(cumulative_matches))
-                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([list(data['otherwise'].values())]), matches[0].shape[0], axis=0))
+                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([dict_to_normalized_list(data['otherwise'])]), matches[0].shape[0], axis=0))
             except KeyError:
                 logging.debug('no otherwise likelihood specified')
         return likelihood
