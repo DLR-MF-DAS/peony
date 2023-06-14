@@ -71,16 +71,16 @@ def json_to_likelihood(json_file, nodata=None):
                 else:
                     matches = np.nonzero(evidence == eval_key)
                     cumulative_matches += (evidence == eval_key)
-                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([data[key]]), matches[0].shape[0], axis=0))
+                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([list(data[key].values())]), matches[0].shape[0], axis=0))
             try:
                 matches = np.nonzero(evidence == nodata)
                 cumulative_matches += (evidence == nodata)
-                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([data['nodata']]), matches[0].shape[0], axis=0))
+                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([list(data['nodata'].values())]), matches[0].shape[0], axis=0))
             except KeyError:
                 logging.debug('no nodata likelihood specified')
             try:
                 matches = np.nonzero(np.logical_not(cumulative_matches))
-                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([data['otherwise']]), matches[0].shape[0], axis=0))
+                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([list(data['otherwise'].values())]), matches[0].shape[0], axis=0))
             except KeyError:
                 logging.debug('no otherwise likelihood specified')
         return likelihood
