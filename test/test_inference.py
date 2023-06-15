@@ -1,7 +1,7 @@
 import os
 import numpy as np
-from peony.inference import bayesian_inference_on_geotiff, likelihood_from_confusion_matrix
-from peony.utils import probability_to_classes, json_to_likelihood
+from peony.inference import bayesian_inference_on_geotiff, likelihood_from_confusion_matrix, json_to_likelihood
+from peony.utils import probability_to_classes
 import subprocess
 import rasterio
 
