@@ -47,7 +47,10 @@ def dict_to_normalized_list(d):
     """A utility function to convert dictionary to a normalized (adds up to 1) list"""
     l = list(d.values())
     s = sum(l)
-    l = [v / s for v in l]
+    if s > 0.0:
+        l = [v / s for v in l]
+    else:
+        l = [1.0 / float(len(l)) for v in l]
     return l
 
 def json_to_likelihood(json_file, nodata=None):
