@@ -6,6 +6,22 @@ from peony.utils import resample_2d
 from ast import literal_eval
 import json
 
+DISTRIBUTIONS = {
+    "gaussian": lambda mu, sigma: lambda x: (1.0 / np.sqrt(2.0 * np.pi * sigma ** 2)) * np.exp(-(x - mu) ** 2 / (2.0 * sigma ** 2)),
+    "uniform": lambda a, b: lambda x: 1.0 / (b - a),
+    "constant": lambda c: lambda x: c
+}
+
+
+class Likelihood:
+    def __init__(self, json_file, nodata=None):
+        with open(json_file, 'r') as fd:
+            self.data = json.load(fd)
+
+    def __call__(self, evidence, hypothesis):
+        pass
+
+
 def dict_to_normalized_list(d):
     """A utility function to convert dictionary to a normalized (adds up to 1) list"""
     l = list(d.values())
