@@ -2,7 +2,7 @@ import rasterio
 import logging
 from rasterio.enums import Resampling
 import numpy as np
-from peony.utils import resample_2d
+from peony.utils import resample_2d, add_suffix_to_filename
 from ast import literal_eval
 import json
 
@@ -81,6 +81,8 @@ def json_to_likelihood(json_file, nodata=None):
     return likelihood_function
 
 def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path, likelihood=lambda x, y: x, prob_scale=10000, band=0):
+    """Perform Bayesian inference on two GeoTIFFs (one with a prior probability and one with evidence).
+    """
     with rasterio.open(hypothesis_path) as h_src:
         hypothesis = h_src.read()
         profile = h_src.profile
@@ -91,6 +93,10 @@ def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path
             else:
                 for band in range(evidence.shape[0]):
                     evidence[band] = resample_2d(evidence[band], h_src.height, h_src.width)
+        resampled_profile = profile.copy()
+        resampled_profile.update({"count": 1})
+        with rasterio.open(add_suffix_to_filename(evidence_path, "_resampled.tiff"), 'w', **resampled_profile) as dst:
+            dst.write(evidence, 1)
     posterior = likelihood(evidence, hypothesis) * hypothesis
     posterior = posterior / posterior.sum(axis=0).astype(float)
     assert np.isclose(np.nan_to_num(posterior.sum(axis=0), nan=1.0), 1.0).all()
