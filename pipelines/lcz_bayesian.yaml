@@ -55,7 +55,7 @@ steps:
       inputFiles:
         - '{workdir}/{name}_wsf_3d.tif'
       cmd:
-        run: peony_bayesian_inference -h {workdir}/{name}_b_pro.tif -e {workdir}/{name}_wsf_3d.tif -p {workdir}/{name}_wsf_3d_pro.tif -l {home}/peony/data/lcz_to_wsf_3d.json
+        run: peony_bayesian_inference -h {workdir}/{name}_b_pro.tif -e {workdir}/{name}_wsf_3d.tif -p {workdir}/{name}_wsf_3d_pro.tif -l {home}/peony/data/lcz_to_wsf_3d_new.json
 
   - name: peony.cmd
     in:

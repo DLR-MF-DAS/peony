@@ -19,7 +19,13 @@ class Likelihood:
             self.data = json.load(fd)
 
     def __call__(self, evidence, hypothesis):
-        pass
+        likelihoods = np.full(hypothesis.shape, None)
+        for key in self.data:
+            if key not in ['nodata', 'otherwise']:
+                matches = np.nonzero(evidence == eval_key)
+                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([dict_to_normalized_list(data[key])]), matches[0].shape[0], axis=0))
+            else:
+                pass
 
 
 def dict_to_normalized_list(d):

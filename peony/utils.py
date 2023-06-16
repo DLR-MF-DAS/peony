@@ -1,3 +1,4 @@
+import pathlib
 import json
 import rasterio
 import numpy as np
@@ -70,3 +71,10 @@ def resample_2d(arr, h, w, method='nearest'):
     new_xg, new_yg = np.meshgrid(new_x, new_y, indexing='ij')
     result = interp((new_xg, new_yg))
     return result
+
+
+def add_suffix_to_filename(filename, suffix):
+    path = pathlib.Path(filename)
+    root_path = str(path.with_suffix(''))
+    root_path += suffix
+    return root_path
