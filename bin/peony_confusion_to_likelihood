@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import click
+import json
+from peony.inference import likelihood_from_confusion_matrix
+
+@click.command()
+@click.option('-c', '--confusion', help="Confusion matrix specification")
+@click.option('-m', '--mapping', help="A mapping between the data sets")
+@click.option('-l', '--likelihood', help="A likelihood file")
+def main(confusion, mapping, likelihood):
+    with open(confusion, 'r') as fd:
+        confusion_data = json.load(fd)
+    with open(mapping, 'r') as fd:
+        mapping_data = json.load(fd)
+    with open(likelihood, 'w') as fd:
+        json.dump(likelihood_from_confusion_matrix(confusion_data, mapping_data), fd)
+
+if __name__ == '__main__':
+    main()
