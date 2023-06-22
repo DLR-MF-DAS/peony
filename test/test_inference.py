@@ -112,4 +112,6 @@ def test_likelihood_from_confusion_matrix():
 
 def test_likelihood():
     likelihood = Likelihood("data/lcz_to_wsf_3d_2.json", nodata=-1)
-    
+    e = np.random.random((20, 30))
+    h = np.random.random((17, 20, 30))
+    e_h = likelihood(e, h)

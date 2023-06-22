@@ -16,18 +16,40 @@ DISTRIBUTIONS = {
 
 class Likelihood:
     def __init__(self, json_file, mapping=None, nodata=None):
-        with open(json_file, 'r') as fd:
-            self.data = json.load(fd)
+        if mapping is None:
+            with open(json_file, 'r') as fd:
+                self.data = json.load(fd)
+        else:
+            with open(json_file, 'r') as fd:
+                c = json.load(fd)
+            with open(mapping, 'r') as fd:
+                m = json.load(fd)
+            self.data = self._from_confusion_matrix(c, m)
+
+    def _from_confusion_matrix(self, confusion, mapping):
+        data = {}
+        for e_key in confusion:
+            data[e_key] = {}
+            for h_key in mapping:
+                data[e_key][h_key] = 0.0
+        for e_key in confusion:
+            for h_key in mapping:
+                for m_key in mapping[h_key]:
+                    data[e_key][h_key] += confusion[m_key][e_key]
+        for e_key in data:
+            for h_key in data[e_key]:
+                data[e_key][h_key] = {"type": "constant", "params": {"c": data[e_key][h_key]}}
+        return data
 
     def __call__(self, evidence, hypothesis):
         assert(evidence.shape == hypothesis.shape[1:])
-        likelihood = np.zeroes(hypothesis.shape)
+        likelihood = np.zeros(hypothesis.shape)
         for key in self.data:
             for i in range(evidence.shape[0]):
                 for j in range(evidence.shape[1]):
                     e = evidence[i][j]
-                    for i_h, h in enumerate(data[key]):
-                        pdf = DISTRIBUTIONS[data[key][h]["type"]](**data[key][h]["params"])
+                    for i_h, h in enumerate(self.data[key]):
+                        pdf = DISTRIBUTIONS[self.data[key][h]["type"]](**self.data[key][h]["params"])
                         likelihood[i_h][i][j] = pdf(e)
         likelihood = likelihood / likelihood.sum(axis=0)
         return likelihood
