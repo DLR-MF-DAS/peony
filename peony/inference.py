@@ -3,6 +3,7 @@ import logging
 from rasterio.enums import Resampling
 import numpy as np
 from peony.utils import resample_2d, add_suffix_to_filename
+import itertools
 from ast import literal_eval
 import json
 
@@ -14,18 +15,22 @@ DISTRIBUTIONS = {
 
 
 class Likelihood:
-    def __init__(self, json_file, nodata=None):
+    def __init__(self, json_file, mapping=None, nodata=None):
         with open(json_file, 'r') as fd:
             self.data = json.load(fd)
 
     def __call__(self, evidence, hypothesis):
-        likelihoods = np.full(hypothesis.shape, None)
+        assert(evidence.shape == hypothesis.shape[1:])
+        likelihood = np.zeroes(hypothesis.shape)
         for key in self.data:
-            if key not in ['nodata', 'otherwise']:
-                matches = np.nonzero(evidence == eval_key)
-                likelihood[:, matches[0], matches[1]] = np.transpose(np.repeat(np.array([dict_to_normalized_list(data[key])]), matches[0].shape[0], axis=0))
-            else:
-                pass
+            for i in range(evidence.shape[0]):
+                for j in range(evidence.shape[1]):
+                    e = evidence[i][j]
+                    for i_h, h in enumerate(data[key]):
+                        pdf = DISTRIBUTIONS[data[key][h]["type"]](**data[key][h]["params"])
+                        likelihood[i_h][i][j] = pdf(e)
+        likelihood = likelihood / likelihood.sum(axis=0)
+        return likelihood
 
 
 def dict_to_normalized_list(d):
@@ -37,6 +42,7 @@ def dict_to_normalized_list(d):
     else:
         l = [1.0 / float(len(l)) for v in l]
     return l
+
 
 def json_to_likelihood(json_file, nodata=None):
     """Create a likelihood from a json file.
@@ -80,6 +86,7 @@ def json_to_likelihood(json_file, nodata=None):
         return likelihood
     return likelihood_function
 
+
 def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path, likelihood=lambda x, y: x, prob_scale=10000, band=0):
     """Perform Bayesian inference on two GeoTIFFs (one with a prior probability and one with evidence).
     """
@@ -104,6 +111,7 @@ def bayesian_inference_on_geotiff(hypothesis_path, evidence_path, posterior_path
         posterior = np.rint(posterior * prob_scale).astype(int)
         posterior = np.clip(posterior, 0, prob_scale)
         dst.write(posterior)
+
 
 def likelihood_from_confusion_matrix(confusion, mapping):
     likelihood = {}
