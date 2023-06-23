@@ -25,6 +25,7 @@ class Likelihood:
             with open(mapping, 'r') as fd:
                 m = json.load(fd)
             self.data = self._from_confusion_matrix(c, m)
+        self.nodata = nodata
 
     def _from_confusion_matrix(self, confusion, mapping):
         data = {}
@@ -43,14 +44,27 @@ class Likelihood:
 
     def __call__(self, evidence, hypothesis):
         assert(evidence.shape == hypothesis.shape[1:])
-        likelihood = np.zeros(hypothesis.shape)
+        likelihood = np.full(hypothesis.shape, None)
         for key in self.data:
-            for i in range(evidence.shape[0]):
-                for j in range(evidence.shape[1]):
-                    e = evidence[i][j]
-                    for i_h, h in enumerate(self.data[key]):
-                        pdf = DISTRIBUTIONS[self.data[key][h]["type"]](**self.data[key][h]["params"])
+            for i, j in itertools.product(range(evidence.shape[0]), range(evidence.shape[1])):
+                e = evidence[i][j]
+                for i_h, h in enumerate(self.data[key]):
+                    pdf = DISTRIBUTIONS[self.data[key][h]["type"]](**self.data[key][h]["params"])
+                    if key not in ["nodata", "otherwise"]:
                         likelihood[i_h][i][j] = pdf(e)
+                    elif key == "nodata":
+                        if e == self.nodata:
+                            likelihood[i_h][i][j] = pdf(e)
+        try:
+            for i, j in itertools.product(range(evidence.shape[0]), range(evidence.shape[1])):
+                e = evidence[i][j]
+                for i_h, h in enumerate(self.data["otherwise"]):
+                    if likelihood[i_h][i][j] is None:
+                        pdf = DISTRIBUTIONS[self.data["otherwise"][h]["type"]](**self.data["otherwise"][h]["params"])
+                        likelihood[i_h][i][j] = pdf(e)
+        except KeyError:
+            logging.debug("No otherwise key specified in the likelihood description")
+        likelihood = likelihood.astype(float)
         likelihood = likelihood / likelihood.sum(axis=0)
         return likelihood
 
