@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from peony.inference import bayesian_inference_on_geotiff
-from peony.inference import json_to_likelihood
+from peony.inference import Likelihood
 import rasterio
 import click
 import json
@@ -17,7 +17,7 @@ def main(hypothesis, evidence, posterior, likelihood):
     with rasterio.open(evidence) as src:
         nodata = src.nodata
     if likelihood is not None:
-        bayesian_inference_on_geotiff(hypothesis, evidence, posterior, json_to_likelihood(likelihood, nodata=nodata))
+        bayesian_inference_on_geotiff(hypothesis, evidence, posterior, Likelihood(likelihood, nodata=nodata))
     else:
         bayesian_inference_on_geotiff(hypothesis, evidence, posterior, band=None)
 
